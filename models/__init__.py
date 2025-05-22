@@ -1,1 +1,0 @@
-from .automlproject import AutoMLProject
