@@ -79,8 +79,7 @@
       height: 42px;
       border-radius: 50%;
     }
-
-    .dropdown {
+    .user-dropdown {
       display: none;
       position: absolute;
       top: 50px;
@@ -94,7 +93,7 @@
       z-index: 100;
     }
 
-    .dropdown .profile-section {
+    .user-dropdown .profile-section {
       width: 233px;
       height: 100px;
       margin: 10px auto;
@@ -106,31 +105,31 @@
       border-bottom: 1px solid #DEECFF;
     }
 
-    .dropdown .profile-section img {
+    .user-dropdown .profile-section img {
       width: 44px;
       height: 44px;
       border-radius: 50%;
     }
 
-    .dropdown .profile-section .user-info {
+    .user-dropdown .profile-section .user-info {
       text-align: center;
     }
 
-    .dropdown .profile-section .user-info span {
+    .user-dropdown .profile-section .user-info span {
       display: block;
     }
 
-    .dropdown .profile-section .user-info .username {
+    .user-dropdown .profile-section .user-info .username {
       font-size: 12px;
       font-weight: bold;
     }
-
-    .dropdown .profile-section .user-info .email {
+    .user-dropdown .profile-section .user-info .email {
       font-size: 12px;
       color: #979797;
     }
 
-    .dropdown .menu-item {
+    .user-dropdown .menu-item {
+
       width: 233px;
       height: 26px;
       margin: 5px auto;
@@ -145,7 +144,8 @@
       border: 1px solid rgba(22, 119, 255, 0.7);
     }
 
-    .dropdown .menu-item:hover {
+    .user-dropdown .menu-item:hover {
+
       background-color: rgba(201, 234, 255, 0.65);
     }
 
@@ -235,18 +235,17 @@
       gap: 20px;
     }
 
-    .gray-frame {
-      background-color: #F4F6FA;
-      padding: 15px;
-      border-radius: 5px;
-    }
-
     .section-title {
       font-size: 20px;
       font-weight: 500;
       margin-bottom: 20px;
     }
 
+    .gray-frame {
+      background-color: #F4F6FA;
+      padding: 15px;
+      border-radius: 5px;
+    }
     .config-group {
       display: flex;
       gap: 20px;
@@ -275,11 +274,11 @@
       position: relative;
     }
 
-    .category-select.active .dropdown {
+    .category-select.active .select-dropdown {
       display: block;
     }
 
-    .dropdown {
+    .select-dropdown {
       display: none;
       position: absolute;
       top: 100%;
@@ -359,6 +358,13 @@
       border-bottom: 1px solid #DEECFF;
     }
 
+    .data-table-container {
+      background-color: #FFFFFF;
+      border: 1px solid #000000;
+      border-radius: 5px;
+      padding: 0;
+    }
+
     .footer {
       margin-top: auto;
       display: flex;
@@ -405,10 +411,10 @@
         <a href="#">Dataset</a>
       </div>
     </div>
-    <div class="user" onclick="toggleDropdown('user')">
+    <div class="user" onclick="toggleUserDropdown()">
       <img src="image/avatar.png" alt="Avatar" />
       <span>Username</span>
-      <div class="dropdown" id="userDropdown">
+      <div class="user-dropdown" id="userDropdown">
         <div class="profile-section">
           <img src="image/avatar.png" alt="Avatar" />
           <div class="user-info">
@@ -448,13 +454,13 @@
     </div>
 
     <div class="right-section">
+      <div class="section-title">Data Configuration</div>
       <div class="gray-frame">
-        <div class="section-title">Data Configuration</div>
         <div class="config-group">
           <div class="config-item">
             <label class="config-label">Target Column</label>
-            <div class="category-select" id="targetColumnSelect" onclick="toggleDropdown('target')">Select a category</div>
-            <div class="dropdown" id="targetDropdown">
+            <div class="category-select" id="targetColumnSelect" onclick="toggleColumnDropdown('target')">Select a category</div>
+            <div class="select-dropdown" id="targetDropdown">
               <input type="text" class="dropdown-search" id="targetSearch" placeholder="Find an item" oninput="filterOptions('target')" />
               <div class="dropdown-options" id="targetOptions">
                 <div class="dropdown-option" onclick="selectOption('target', 'Product_Base_ID')">Product_Base_ID</div>
@@ -467,8 +473,8 @@
           </div>
           <div class="config-item">
             <label class="config-label">Image Column</label>
-            <div class="category-select" id="imageColumnSelect" onclick="toggleDropdown('image')">Select a category</div>
-            <div class="dropdown" id="imageDropdown">
+            <div class="category-select" id="imageColumnSelect" onclick="toggleColumnDropdown('image')">Select a category</div>
+            <div class="select-dropdown" id="imageDropdown">
               <input type="text" class="dropdown-search" id="imageSearch" placeholder="Find an item" oninput="filterOptions('image')" />
               <div class="dropdown-options" id="imageOptions">
                 <div class="dropdown-option" onclick="selectOption('image', 'Product_Base_ID')">Product_Base_ID</div>
@@ -480,89 +486,92 @@
             </div>
           </div>
         </div>
-        <table class="data-table">
-          <thead>
-            <tr>
-              <th>PRODUCT_BASE_ID</th>
-              <th>REPORT_ID</th>
-              <th>PRODUCT_NAME</th>
-              <th>URL_THUMBNAIL</th>
-              <th>REPORT_NAME</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>1_3444_77993434554</td>
-              <td>29</td>
-              <td>Gel tẩy tế bào chết cho người</td>
-              <td>https://chatgpt.com</td>
-              <td>https://chatgpt.com</td>
-            </tr>
-            <tr>
-              <td>1_3444_77993434554</td>
-              <td>29</td>
-              <td>Gel tẩy tế bào chết cho người</td>
-              <td>https://chatgpt.com</td>
-              <td>Nhóm hàng tẩy trang</td>
-            </tr>
-            <tr>
-              <td>1_3444_77993434554</td>
-              <td>29</td>
-              <td>Gel tẩy tế bào chết cho người</td>
-              <td>https://chatgpt.com</td>
-              <td>Nhóm hàng tẩy trang</td>
-            </tr>
-            <tr>
-              <td>1_3444_77993434554</td>
-              <td>29</td>
-              <td>Gel tẩy tế bào chết cho người</td>
-              <td>https://chatgpt.com</td>
-              <td>Nhóm hàng tẩy trang</td>
-            </tr>
-            <tr>
-              <td>1_3444_77993434554</td>
-              <td>29</td>
-              <td>Gel tẩy tế bào chết cho người</td>
-              <td>https://chatgpt.com</td>
-              <td>Nhóm hàng tẩy trang</td>
-            </tr>
-            <tr>
-              <td>1_3444_77993434554</td>
-              <td>29</td>
-              <td>Gel tẩy tế bào chết cho người</td>
-              <td>https://chatgpt.com</td>
-              <td>Nhóm hàng tẩy trang</td>
-            </tr>
-            <tr>
-              <td>1_3444_77993434554</td>
-              <td>29</td>
-              <td>Gel tẩy tế bào chết cho người</td>
-              <td>https://chatgpt.com</td>
-              <td>Nhóm hàng tẩy trang</td>
-            </tr>
-            <tr>
-              <td>1_3444_77993434554</td>
-              <td>29</td>
-              <td>Gel tẩy tế bào chết cho người</td>
-              <td>https://chatgpt.com</td>
-              <td>Nhóm hàng tẩy trang</td>
-            </tr>
-            <tr>
-              <td>1_3444_77993434554</td>
-              <td>29</td>
-              <td>Gel tẩy tế bào chết cho người</td>
-              <td>https://chatgpt.com</td>
-              <td>Nhóm hàng tẩy trang</td>
-            </tr>
-            <tr>
-              <td>1_3444_77993434554</td>
-              <td>29</td>
-              <td>Gel tẩy tế bào chết cho người</td>
-              <td>https://chatgpt.com</td>
-              <td>Nhóm hàng tẩy trang</td>
-            </tr>
-          </tbody>
-        </table>
+        <div class="data-table-container">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>PRODUCT_BASE_ID</th>
+                <th>REPORT_ID</th>
+                <th>PRODUCT_NAME</th>
+                <th>URL_THUMBNAIL</th>
+                <th>REPORT_NAME</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>1_3444_77993434554</td>
+                <td>29</td>
+                <td>Gel tẩy tế bào chết cho người</td>
+                <td>https://chatgpt.com</td>
+                <td>https://chatgpt.com</td>
+              </tr>
+              <tr>
+                <td>1_3444_77993434554</td>
+                <td>29</td>
+                <td>Gel tẩy tế bào chết cho người</td>
+                <td>https://chatgpt.com</td>
+                <td>Nhóm hàng tẩy trang</td>
+              </tr>
+              <tr>
+                <td>1_3444_77993434554</td>
+                <td>29</td>
+                <td>Gel tẩy tế bào chết cho người</td>
+                <td>https://chatgpt.com</td>
+                <td>Nhóm hàng tẩy trang</td>
+              </tr>
+              <tr>
+                <td>1_3444_77993434554</td>
+                <td>29</td>
+                <td>Gel tẩy tế bào chết cho người</td>
+                <td>https://chatgpt.com</td>
+                <td>Nhóm hàng tẩy trang</td>
+              </tr>
+              <tr>
+                <td>1_3444_77993434554</td>
+                <td>29</td>
+                <td>Gel tẩy tế bào chết cho người</td>
+                <td>https://chatgpt.com</td>
+                <td>Nhóm hàng tẩy trang</td>
+              </tr>
+              <tr>
+                <td>1_3444_77993434554</td>
+                <td>29</td>
+                <td>Gel tẩy tế bào chết cho người</td>
+                <td>https://chatgpt.com</td>
+                <td>Nhóm hàng tẩy trang</td>
+              </tr>
+              <tr>
+                <td>1_3444_77993434554</td>
+                <td>29</td>
+                <td>Gel tẩy tế bào chết cho người</td>
+                <td>https://chatgpt.com</td>
+                <td>Nhóm hàng tẩy trang</td>
+              </tr>
+              <tr>
+                <td>1_3444_77993434554</td>
+                <td>29</td>
+                <td>Gel tẩy tế bào chết cho người</td>
+                <td>https://chatgpt.com</td>
+                <td>Nhóm hàng tẩy trang</td>
+              </tr>
+              <tr>
+                <td>1_3444_77993434554</td>
+                <td>29</td>
+                <td>Gel tẩy tế bào chết cho người</td>
+                <td>https://chatgpt.com</td>
+                <td>Nhóm hàng tẩy trang</td>
+              </tr>
+              <tr>
+                <td>1_3444_77993434554</td>
+                <td>29</td>
+                <td>Gel tẩy tế bào chết cho người</td>
+                <td>https://chatgpt.com</td>
+                <td>Nhóm hàng tẩy trang</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
       </div>
       <div class="footer">
         <button class="previous-step-btn" onclick="window.location.href='choosedatasetstep2.html'">Previous Step</button>
@@ -572,9 +581,17 @@
   </div>
 
   <script>
-    function toggleDropdown(type) {
+    function toggleUserDropdown() {
+      const dropdown = document.getElementById('userDropdown');
+      dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+    }
+
+    function toggleColumnDropdown(type) {
       const select = document.getElementById(`${type}ColumnSelect`);
       select.classList.toggle('active');
+      const searchInput = document.getElementById(`${type}Search`);
+      searchInput.value = ''; // Clear search input when opening
+      filterOptions(type); // Reset options visibility
       const otherType = type === 'target' ? 'image' : 'target';
       const otherSelect = document.getElementById(`${otherType}ColumnSelect`);
       otherSelect.classList.remove('active');
@@ -594,6 +611,13 @@
       }
       document.getElementById(`${type}Search`).value = '';
       filterOptions(type);
+      // Remove selected class from all options and add to the clicked one
+      const options = document.getElementById(`${type}Options`).getElementsByClassName('dropdown-option');
+      for (let option of options) {
+        option.classList.remove('selected');
+      }
+      event.target.classList.add('selected');
+
     }
 
     function filterOptions(type) {
@@ -607,17 +631,21 @@
     }
 
     document.querySelectorAll('.dropdown-option').forEach(option => {
-      option.addEventListener('click', function() {
+      option.addEventListener('click', function(event) {
         const type = this.parentElement.parentElement.id === 'targetDropdown' ? 'target' : 'image';
         selectOption(type, this.textContent);
-        this.parentElement.querySelectorAll('.dropdown-option').forEach(opt => opt.classList.remove('selected'));
-        this.classList.add('selected');
+
       });
     });
 
     document.addEventListener('click', function(event) {
+      const userDropdown = document.getElementById('userDropdown');
       const targetSelect = document.getElementById('targetColumnSelect');
       const imageSelect = document.getElementById('imageColumnSelect');
+      if (!event.target.closest('.user')) {
+        userDropdown.style.display = 'none';
+      }
+
       if (!targetSelect.contains(event.target)) {
         targetSelect.classList.remove('active');
       }

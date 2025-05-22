@@ -69,7 +69,8 @@ async function sendMessage() {
     const assistantMessage = document.createElement('div');
     assistantMessage.classList.add('message', 'assistant');
     assistantMessage.innerHTML = `
-      <img src="logo.png" alt="Cat Assistant" />
+      <img src="image/logo.png" alt="Cat Assistant" />
+
       <div class="message-content">${assistantResponse}</div>
     `;
 
@@ -86,7 +87,8 @@ async function sendMessage() {
     const errorMessage = document.createElement('div');
     errorMessage.classList.add('message', 'assistant');
     errorMessage.innerHTML = `
-      <img src="logo.png" alt="Cat Assistant" />
+      <img src="image/logo.png" alt="Cat Assistant" />
+
       <div class="message-content">❌ Error: ${error.message}</div>
     `;
     chatMessages.appendChild(errorMessage);
