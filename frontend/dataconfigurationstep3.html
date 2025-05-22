@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ASTRAL - Data Configuration Step 3</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@200;300;400;500;700&family=Crimson+Text:wght@400&family=Inter:wght@600&display=swap" rel="stylesheet" />
+  <style>
+    body {
+      font-family: 'Roboto', sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #FFFFFF;
+      overflow-x: hidden;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .navbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 20px;
+      border-bottom: 1px solid #DEECFF;
+    }
+
+    .navbar .logo-container {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .navbar img {
+      height: 40px;
+      border-radius: 50%;
+    }
+
+    .logo-text {
+      font-family: 'Crimson Text', serif;
+      font-size: 30px;
+      color: #000000;
+      margin-right: 30px;
+    }
+
+    .navbar .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .navbar a {
+      text-decoration: none;
+      color: #000000;
+      font-size: 16px;
+    }
+
+    .navbar a.active {
+      color: #000000;
+      border-bottom: none;
+    }
+
+    .navbar a:hover {
+      color: #1677FF;
+      text-decoration: underline;
+      text-decoration-color: #1677FF;
+    }
+
+    .user {
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+    }
+
+    .user img {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+    }
+
+    .dropdown {
+      display: none;
+      position: absolute;
+      top: 50px;
+      right: 0;
+      width: 256px;
+      height: 309px;
+      background-color: #FFFFFF;
+      border: 1px solid #DEECFF;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      z-index: 100;
+    }
+
+    .dropdown .profile-section {
+      width: 233px;
+      height: 100px;
+      margin: 10px auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      border-bottom: 1px solid #DEECFF;
+    }
+
+    .dropdown .profile-section img {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+    }
+
+    .dropdown .profile-section .user-info {
+      text-align: center;
+    }
+
+    .dropdown .profile-section .user-info span {
+      display: block;
+    }
+
+    .dropdown .profile-section .user-info .username {
+      font-size: 12px;
+      font-weight: bold;
+    }
+
+    .dropdown .profile-section .user-info .email {
+      font-size: 12px;
+      color: #979797;
+    }
+
+    .dropdown .menu-item {
+      width: 233px;
+      height: 26px;
+      margin: 5px auto;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding-left: 10px;
+      font-size: 12px;
+      color: #000000;
+      border-radius: 5px;
+      cursor: pointer;
+      border: 1px solid rgba(22, 119, 255, 0.7);
+    }
+
+    .dropdown .menu-item:hover {
+      background-color: rgba(201, 234, 255, 0.65);
+    }
+
+    .main {
+      padding: 20px;
+      display: flex;
+      gap: 20px;
+      flex: 1;
+    }
+
+    .left-column {
+      width: 200px;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .header {
+      font-size: 16px;
+      font-weight: 500;
+      margin-bottom: 20px;
+    }
+
+    .step {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+    }
+
+    .step-number {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background-color: #A6A6A6;
+      color: #FFFFFF;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      transition: background-color 0.2s ease;
+    }
+
+    .step.completed .step-number {
+      background-color: #1677FF;
+    }
+
+    .step.completed .step-text {
+      color: #1677FF;
+    }
+
+    .step-text {
+      font-size: 14px;
+      color: #000000;
+      padding: 5px 10px;
+      transition: background-color 0.2s ease, color 0.2s ease;
+    }
+
+    .step.active {
+      background-color: rgba(22, 119, 255, 0.1);
+    }
+
+    .step:hover .step-number {
+      background-color: #1677FF;
+    }
+
+    .step:hover .step-text {
+      color: #1677FF;
+      background-color: rgba(22, 119, 255, 0.1);
+    }
+
+    .cancel-link {
+      font-size: 12px;
+      color: #A6A6A6;
+      text-decoration: none;
+      margin-top: 10px;
+    }
+
+    .cancel-link:hover {
+      text-decoration: underline;
+    }
+
+    .right-section {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .gray-frame {
+      background-color: #F4F6FA;
+      padding: 15px;
+      border-radius: 5px;
+    }
+
+    .section-title {
+      font-size: 20px;
+      font-weight: 500;
+      margin-bottom: 20px;
+    }
+
+    .config-group {
+      display: flex;
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+
+    .config-item {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .config-label {
+      font-size: 16px;
+      font-weight: 400;
+      margin-bottom: 5px;
+    }
+
+    .category-select {
+      font-size: 16px;
+      color: #737373;
+      padding: 8px;
+      border: 1px solid rgba(0, 0, 0, 0.5);
+      border-radius: 5px;
+      width: 200px;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .category-select.active .dropdown {
+      display: block;
+    }
+
+    .dropdown {
+      display: none;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      width: 100%;
+      background-color: #FFFFFF;
+      border: 1px solid rgba(0, 0, 0, 0.5);
+      border-radius: 5px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      z-index: 10;
+    }
+
+    .dropdown-search {
+      width: 100%;
+      padding: 8px;
+      border: none;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.5);
+      font-size: 16px;
+      color: #737373;
+      box-sizing: border-box;
+    }
+
+    .dropdown-search:focus {
+      outline: none;
+      color: #000000;
+    }
+
+    .dropdown-search:not(:placeholder-shown) {
+      color: #000000;
+    }
+
+    .dropdown-options {
+      max-height: 150px;
+      overflow-y: auto;
+    }
+
+    .dropdown-option {
+      font-size: 16px;
+      color: #000000;
+      padding: 8px;
+      cursor: pointer;
+    }
+
+    .dropdown-option:hover {
+      font-weight: 500;
+    }
+
+    .dropdown-option.selected {
+      background-color: rgba(22, 119, 255, 0.1);
+      border: 1px solid rgba(22, 119, 255, 0.25);
+      border-radius: 10px;
+    }
+
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 20px;
+    }
+
+    .data-table th {
+      background-color: #F4F6FA;
+      font-family: 'Inter', sans-serif;
+      font-size: 16px;
+      font-weight: 600;
+      text-transform: uppercase;
+      padding: 10px;
+      text-align: left;
+      border-bottom: 1px solid #DEECFF;
+    }
+
+    .data-table td {
+      font-family: 'Roboto', sans-serif;
+      font-size: 16px;
+      font-weight: 300;
+      padding: 10px;
+      text-align: left;
+      border-bottom: 1px solid #DEECFF;
+    }
+
+    .footer {
+      margin-top: auto;
+      display: flex;
+      justify-content: space-between;
+      padding: 20px 0;
+    }
+
+    .previous-step-btn,
+    .next-step-btn {
+      font-size: 12px;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+      font-family: 'Roboto', sans-serif;
+    }
+
+    .previous-step-btn {
+      color: #A6A6A6;
+      background: none;
+    }
+
+    .next-step-btn {
+      background-color: #A6A6A6;
+      color: #FFFFFF;
+      border-radius: 10px;
+      cursor: not-allowed;
+    }
+
+    .next-step-btn.active {
+      background-color: #1677FF;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="navbar">
+    <div class="logo-container">
+      <img src="image/logo.png" alt="Logo" />
+      <span class="logo-text">Astral</span>
+      <div class="nav-links">
+        <a href="dashboard.html" class="active">Projects</a>
+        <a href="#">Dataset</a>
+      </div>
+    </div>
+    <div class="user" onclick="toggleDropdown('user')">
+      <img src="image/avatar.png" alt="Avatar" />
+      <span>Username</span>
+      <div class="dropdown" id="userDropdown">
+        <div class="profile-section">
+          <img src="image/avatar.png" alt="Avatar" />
+          <div class="user-info">
+            <span class="username">Username</span>
+            <span class="email">usernamedeptrainhatng@gmail.com</span>
+          </div>
+        </div>
+        <div class="menu-item"><span style="font-family: 'Roboto', sans-serif;">👤</span> My profile</div>
+        <div class="menu-item"><span style="font-family: 'Roboto', sans-serif;">📁</span> My projects</div>
+        <div class="menu-item"><span style="font-family: 'Roboto', sans-serif;">💻</span> My datasets</div>
+        <div class="menu-item"><span style="font-family: 'Roboto', sans-serif;">⚙</span> Settings</div>
+        <div class="menu-item"><span style="font-family: 'Roboto', sans-serif;">🚪</span> Logout</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="main">
+    <div class="left-column">
+      <div class="header">Create a new project</div>
+      <div class="step completed">
+        <span class="step-number">1</span>
+        <span class="step-text">Project Details</span>
+      </div>
+      <div class="step completed">
+        <span class="step-number">2</span>
+        <span class="step-text">Choose Dataset</span>
+      </div>
+      <div class="step active">
+        <span class="step-number">3</span>
+        <span class="step-text">Data Configuration</span>
+      </div>
+      <div class="step">
+        <span class="step-number">4</span>
+        <span class="step-text">Automatic Config</span>
+      </div>
+      <a href="boxchat.html" class="cancel-link">Cancel</a>
+    </div>
+
+    <div class="right-section">
+      <div class="gray-frame">
+        <div class="section-title">Data Configuration</div>
+        <div class="config-group">
+          <div class="config-item">
+            <label class="config-label">Target Column</label>
+            <div class="category-select" id="targetColumnSelect" onclick="toggleDropdown('target')">Select a category</div>
+            <div class="dropdown" id="targetDropdown">
+              <input type="text" class="dropdown-search" id="targetSearch" placeholder="Find an item" oninput="filterOptions('target')" />
+              <div class="dropdown-options" id="targetOptions">
+                <div class="dropdown-option" onclick="selectOption('target', 'Product_Base_ID')">Product_Base_ID</div>
+                <div class="dropdown-option" onclick="selectOption('target', 'Report_ID')">Report_ID</div>
+                <div class="dropdown-option" onclick="selectOption('target', 'Product_Name')">Product_Name</div>
+                <div class="dropdown-option" onclick="selectOption('target', 'url_thumbnail')">url_thumbnail</div>
+                <div class="dropdown-option" onclick="selectOption('target', 'report_name')">report_name</div>
+              </div>
+            </div>
+          </div>
+          <div class="config-item">
+            <label class="config-label">Image Column</label>
+            <div class="category-select" id="imageColumnSelect" onclick="toggleDropdown('image')">Select a category</div>
+            <div class="dropdown" id="imageDropdown">
+              <input type="text" class="dropdown-search" id="imageSearch" placeholder="Find an item" oninput="filterOptions('image')" />
+              <div class="dropdown-options" id="imageOptions">
+                <div class="dropdown-option" onclick="selectOption('image', 'Product_Base_ID')">Product_Base_ID</div>
+                <div class="dropdown-option" onclick="selectOption('image', 'Report_ID')">Report_ID</div>
+                <div class="dropdown-option" onclick="selectOption('image', 'Product_Name')">Product_Name</div>
+                <div class="dropdown-option" onclick="selectOption('image', 'url_thumbnail')">url_thumbnail</div>
+                <div class="dropdown-option" onclick="selectOption('image', 'report_name')">report_name</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>PRODUCT_BASE_ID</th>
+              <th>REPORT_ID</th>
+              <th>PRODUCT_NAME</th>
+              <th>URL_THUMBNAIL</th>
+              <th>REPORT_NAME</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1_3444_77993434554</td>
+              <td>29</td>
+              <td>Gel tẩy tế bào chết cho người</td>
+              <td>https://chatgpt.com</td>
+              <td>https://chatgpt.com</td>
+            </tr>
+            <tr>
+              <td>1_3444_77993434554</td>
+              <td>29</td>
+              <td>Gel tẩy tế bào chết cho người</td>
+              <td>https://chatgpt.com</td>
+              <td>Nhóm hàng tẩy trang</td>
+            </tr>
+            <tr>
+              <td>1_3444_77993434554</td>
+              <td>29</td>
+              <td>Gel tẩy tế bào chết cho người</td>
+              <td>https://chatgpt.com</td>
+              <td>Nhóm hàng tẩy trang</td>
+            </tr>
+            <tr>
+              <td>1_3444_77993434554</td>
+              <td>29</td>
+              <td>Gel tẩy tế bào chết cho người</td>
+              <td>https://chatgpt.com</td>
+              <td>Nhóm hàng tẩy trang</td>
+            </tr>
+            <tr>
+              <td>1_3444_77993434554</td>
+              <td>29</td>
+              <td>Gel tẩy tế bào chết cho người</td>
+              <td>https://chatgpt.com</td>
+              <td>Nhóm hàng tẩy trang</td>
+            </tr>
+            <tr>
+              <td>1_3444_77993434554</td>
+              <td>29</td>
+              <td>Gel tẩy tế bào chết cho người</td>
+              <td>https://chatgpt.com</td>
+              <td>Nhóm hàng tẩy trang</td>
+            </tr>
+            <tr>
+              <td>1_3444_77993434554</td>
+              <td>29</td>
+              <td>Gel tẩy tế bào chết cho người</td>
+              <td>https://chatgpt.com</td>
+              <td>Nhóm hàng tẩy trang</td>
+            </tr>
+            <tr>
+              <td>1_3444_77993434554</td>
+              <td>29</td>
+              <td>Gel tẩy tế bào chết cho người</td>
+              <td>https://chatgpt.com</td>
+              <td>Nhóm hàng tẩy trang</td>
+            </tr>
+            <tr>
+              <td>1_3444_77993434554</td>
+              <td>29</td>
+              <td>Gel tẩy tế bào chết cho người</td>
+              <td>https://chatgpt.com</td>
+              <td>Nhóm hàng tẩy trang</td>
+            </tr>
+            <tr>
+              <td>1_3444_77993434554</td>
+              <td>29</td>
+              <td>Gel tẩy tế bào chết cho người</td>
+              <td>https://chatgpt.com</td>
+              <td>Nhóm hàng tẩy trang</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="footer">
+        <button class="previous-step-btn" onclick="window.location.href='choosedatasetstep2.html'">Previous Step</button>
+        <button id="nextStepBtn" class="next-step-btn" disabled>Next Step</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function toggleDropdown(type) {
+      const select = document.getElementById(`${type}ColumnSelect`);
+      select.classList.toggle('active');
+      const otherType = type === 'target' ? 'image' : 'target';
+      const otherSelect = document.getElementById(`${otherType}ColumnSelect`);
+      otherSelect.classList.remove('active');
+    }
+
+    function selectOption(type, value) {
+      const select = document.getElementById(`${type}ColumnSelect`);
+      select.textContent = value;
+      select.classList.remove('active');
+      const nextStepBtn = document.getElementById('nextStepBtn');
+      const targetSelected = document.getElementById('targetColumnSelect').textContent !== 'Select a category';
+      const imageSelected = document.getElementById('imageColumnSelect').textContent !== 'Select a category';
+      if (targetSelected && imageSelected) {
+        nextStepBtn.classList.add('active');
+        nextStepBtn.disabled = false;
+        nextStepBtn.onclick = function() { window.location.href = 'automaticconfigstep4.html'; };
+      }
+      document.getElementById(`${type}Search`).value = '';
+      filterOptions(type);
+    }
+
+    function filterOptions(type) {
+      const searchInput = document.getElementById(`${type}Search`).value.toLowerCase();
+      const optionsContainer = document.getElementById(`${type}Options`);
+      const options = optionsContainer.getElementsByClassName('dropdown-option');
+      for (let option of options) {
+        const text = option.textContent.toLowerCase();
+        option.style.display = text.includes(searchInput) ? 'block' : 'none';
+      }
+    }
+
+    document.querySelectorAll('.dropdown-option').forEach(option => {
+      option.addEventListener('click', function() {
+        const type = this.parentElement.parentElement.id === 'targetDropdown' ? 'target' : 'image';
+        selectOption(type, this.textContent);
+        this.parentElement.querySelectorAll('.dropdown-option').forEach(opt => opt.classList.remove('selected'));
+        this.classList.add('selected');
+      });
+    });
+
+    document.addEventListener('click', function(event) {
+      const targetSelect = document.getElementById('targetColumnSelect');
+      const imageSelect = document.getElementById('imageColumnSelect');
+      if (!targetSelect.contains(event.target)) {
+        targetSelect.classList.remove('active');
+      }
+      if (!imageSelect.contains(event.target)) {
+        imageSelect.classList.remove('active');
+      }
+    });
+  </script>
+</body>
+</html>
