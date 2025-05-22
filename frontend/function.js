@@ -50,10 +50,10 @@ async function sendMessage() {
     if (!response.ok) {
       throw new Error(`API error: ${response.status}`);
     }
-    //test
+
     const reader = response.body.getReader();
     const decoder = new TextDecoder();
-    
+
     let assistantMessage = document.createElement('div');
     assistantMessage.classList.add('message', 'assistant');
     assistantMessage.innerHTML = `<img src="image/logo.png" alt="Cat Assistant" /><div class="message-content"></div>`;
@@ -61,51 +61,15 @@ async function sendMessage() {
     const messageContentDiv = assistantMessage.querySelector('.message-content');
 
     // Đọc stream dần
-     while(true) {
+    while (true) {
       const { done, value } = await reader.read();
       if (done) break;
       const chunk = decoder.decode(value, { stream: true });
-      messageContentDiv.innerHTML += chunk;  // Cập nhật dần UI
+      const htmlChunk = chunk.replace(/\n/g, '<br>'); // <-- Sửa tại đây
+      messageContentDiv.innerHTML += htmlChunk;
       chatMessages.scrollTop = chatMessages.scrollHeight;
     }
 
-    //test
-    /*let assistantResponse = data.response;
-
-
-    if (messageText.toLowerCase() === 'tôi đồng ý') {
-      const confirmPayload = {
-        user_id: "default",
-        message: "tạo project"
-      };
-      const confirmResponse = await fetch(API_URL, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(confirmPayload)
-      });
-      const confirmData = await confirmResponse.json();
-      assistantResponse = confirmData.response;
-    }
-
-    const assistantMessage = document.createElement('div');
-    assistantMessage.classList.add('message', 'assistant');
-    assistantMessage.innerHTML = `
-      <img src="image/logo.png" alt="Cat Assistant" />
-
-      <div class="message-content">${assistantResponse}</div>
-    `;
-
-    if (assistantResponse.includes("Nếu bạn đồng ý, hãy nhập 'Tôi đồng ý'")) {
-      const createBtn = document.createElement('div');
-      createBtn.classList.add('create-btn');
-      createBtn.innerText = 'Create';
-      createBtn.onclick = openModal;
-      assistantMessage.querySelector('.message-content').appendChild(createBtn);
-    }
-
-    chatMessages.appendChild(assistantMessage);*/
   } catch (error) {
     const errorMessage = document.createElement('div');
     errorMessage.classList.add('message', 'assistant');
@@ -161,7 +125,7 @@ function setupBoxChatListeners() {
   const chatInput = document.getElementById('chatInput');
   const sendBtn = document.getElementById('sendBtn');
 
-  chatInput.addEventListener('input', function() {
+  chatInput.addEventListener('input', function () {
     if (chatInput.value.trim() !== '') {
       chatInput.placeholder = '';
       sendBtn.classList.add('active');
@@ -173,14 +137,14 @@ function setupBoxChatListeners() {
     }
   });
 
-  chatInput.addEventListener('keypress', function(e) {
+  chatInput.addEventListener('keypress', function (e) {
     if (e.key === 'Enter' && !e.shiftKey && chatInput.value.trim() !== '') {
       e.preventDefault();
       sendMessage();
     }
   });
 
-  sendBtn.addEventListener('click', function() {
+  sendBtn.addEventListener('click', function () {
     if (!sendBtn.disabled) {
       sendMessage();
     }
