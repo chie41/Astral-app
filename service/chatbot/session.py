@@ -29,7 +29,7 @@ class ChatSession:
                     "columns": ds.get("columns")  # Đây là danh sách tên cột
                 })
         return relevant
-
+    
 
     def is_automl_request(self, message: str) -> str:
         text = message.lower().strip()
@@ -67,7 +67,7 @@ Câu nói:
         if self.status == "configuring":
             return self.project.next_step()
 
-        type_ = self.is_automl_request(message)
+        type_ = "Model"
 
         if type_ == "Model":
             all_datasets = self.get_all_datasets()
@@ -99,39 +99,59 @@ Sau đó, ở cuối hãy gợi ý dự án dưới dạng JSON gồm các trư�
 - dataset (tìm trong database gợi ý cho người dùng)
 
 Trả lời theo cấu trúc:
-- Phần tư vấn chi tiết (văn bản)
-- Phần JSON (mã code block)
+- Phần tư vấn chi tiết (văn bản) 
+- Phần JSON (mã code block) viết sau cùng và phần trả lời dưới dạng **JSON duy nhất** như sau không cần thêm gì như "Phần JSON" vào trước cấu trúc cả:
+
+```json
+{{
+  "project_name": "...",
+  "project_type": "...",
+  "project_description": "...",
+  "dataset": "..."
+}}
+
 """
+            
             try:
-                buffer = ""
-                json_start = None
-                json_end = None
-                json_text = ""
+                in_json_block = False
+                json_lines = []
+                buffet = ""
 
                 for chunk in self.aiAssistant.analyze_message(prompt):
-                    yield chunk  # Trả về từng phần text ngay lập tức
+                    buffet += chunk
+                    # Bắt đầu JSON block
+                    if "```json" in buffet and not in_json_block:
+                        in_json_block = True
+                        print("In JSON")
+                        continue
 
-                    # Thu thập vào buffer để tách JSON sau
-                    buffer += chunk
-
-                # Sau khi hết stream, tách JSON từ buffer
-                json_match = re.search(r"```json\s*(\{.*?\})\s*```", buffer, re.DOTALL)
-                if not json_match:
-                    yield "❌ Không tìm thấy JSON trong phản hồi AI."
-                    return
-
-                json_str = json_match.group(1)
-                data = json.loads(json_str)
-
-                self.project_suggestion = {
-                    "project_name": data.get("project_name"),
-                    "project_type": data.get("project_type"),
-                    "project_description": data.get("project_description"),
-                    "dataset": data.get("dataset"),
-                }
-
+                    if in_json_block:
+                        # Nếu phát hiện kết thúc JSON block
+                        if "}```" in buffet:
+                            print("Out JSON")
+                            in_json_block = False
+                
+                    else: yield chunk  # Trả về từng phần text ngay lập tức
+                
+                #Chạy text hướng dẫn xong thì xử lý JSON
+                try:
+                    match = re.search(r"```json\s*({.*?})\s*```", buffet, re.DOTALL)
+                    if match:
+                        json_str = match.group(1)
+                        data = json.loads(json_str)
+                        self.project_suggestion = {
+                            "project_name": data.get("project_name"),
+                            "project_type": data.get("project_type"),
+                            "project_description": data.get("project_description"),
+                            "dataset": data.get("dataset"),
+                        }
+                        print("Xử lý xong JSON rồi")
+                    else:
+                        print("❌ Không tìm thấy JSON hợp lệ trong kết quả AI trả về.")
+                except Exception as e:
+                    print(f"❌ Lỗi khi parse JSON: {e}")
             except Exception as e:
-                yield f"❌ Lỗi khi gọi AI: {e}"
+                print(f"❌ Lỗi khi gọi AI: {e}")
 
 
         elif type_ == "Lời chào":
