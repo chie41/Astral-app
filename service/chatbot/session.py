@@ -103,18 +103,25 @@ Trả lời theo cấu trúc:
 - Phần JSON (mã code block)
 """
             try:
-                print("dhsaoihdoihsodi" + prompt +'\n')
-                response_text = self.aiAssistant.analyze_message(prompt)
+                buffer = ""
+                json_start = None
+                json_end = None
+                json_text = ""
 
-                # Cố gắng tách JSON trong block ```json ... ```
-                json_match = re.search(r"```json\s*(\{.*?\})\s*```", response_text, re.DOTALL)
+                for chunk in self.aiAssistant.analyze_message(prompt):
+                    yield chunk  # Trả về từng phần text ngay lập tức
+
+                    # Thu thập vào buffer để tách JSON sau
+                    buffer += chunk
+
+                # Sau khi hết stream, tách JSON từ buffer
+                json_match = re.search(r"```json\s*(\{.*?\})\s*```", buffer, re.DOTALL)
                 if not json_match:
-                    return "❌ Không tìm thấy JSON trong phản hồi AI."
+                    yield "❌ Không tìm thấy JSON trong phản hồi AI."
+                    return
 
                 json_str = json_match.group(1)
                 data = json.loads(json_str)
-
-                explanation = response_text[:json_match.start()].strip()
 
                 self.project_suggestion = {
                     "project_name": data.get("project_name"),
@@ -123,30 +130,22 @@ Trả lời theo cấu trúc:
                     "dataset": data.get("dataset"),
                 }
 
-                return (
-                    f"{explanation}\n\n"
-                    f"Gợi ý dự án:\n"
-                    f"- Tên dự án: {data.get('project_name')}\n"
-                    f"- Loại bài toán: {data.get('project_type')}\n"
-                    f"- Mô tả dự án: {data.get('project_description')}\n"
-                    f"- Dataset gợi ý: {data.get('dataset')}\n\n"
-                    f"Nếu bạn đồng ý, hãy nhập 'Tôi đồng ý'."
-                )
-
             except Exception as e:
-                return f"❌ Lỗi khi gọi AI: {e}"
+                yield f"❌ Lỗi khi gọi AI: {e}"
+
 
         elif type_ == "Lời chào":
-            return "Moew~ Moew~ Xin chào!"
+            yield "Moew~ Moew~ Xin chào!"
+
 
         elif type_ == "Giải thích":
-            return "Moew moew giải thích cho bạn đây!"
+            yield "Moew moew giải thích cho bạn đây!"
 
         elif type_ == "Khác":
-            return "Moew moew mình không biết, bạn thử hỏi điều khác nhé!"
+            yield "Moew moew mình không biết, bạn thử hỏi điều khác nhé!"
 
         else:
-            return "Xin lỗi, tôi chưa hiểu yêu cầu của bạn."
+            yield "Xin lỗi, tôi chưa hiểu yêu cầu của bạn."
 
     def confirm_create_project(self):
         self.project = AutoMLProject()
