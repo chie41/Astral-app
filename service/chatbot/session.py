@@ -1,9 +1,10 @@
-from models.automlproject import AutoMLProject
+from service.models.automlproject import AutoMLProject
 from typing import Dict
 import json
 import re
 from service.chatbot.ollama_client import OllamaClient
 from service.chatbot.huggingface import HuggingFaceClient
+from service.models.datasetManager import DatasetManager
 
 class ChatSession:
     def __init__(self):
@@ -13,14 +14,13 @@ class ChatSession:
         self.status = "suggesting"  # or "configuring"
         #self.aiAssistant = HuggingFaceClient()
         self.aiAssistant = OllamaClient()
+        self.datasetmanager = DatasetManager()
 
-    def get_relevant_datasets(self, project_type: str):
-        all_datasets = self.dataset_manager.get_all_dataset_info()
+    def get_all_datasets(self):
+        all_datasets = self.datasetmanager.get_all_dataset_info()
         relevant = []
         for ds in all_datasets:
-            # Kiểm tra mô tả có chứa project_type (không phân biệt hoa thường)
-            if ds.get("description") and project_type.lower() in ds["description"].lower():
-                # Chuẩn bị thông tin dataset đầy đủ hơn, thêm danh sách cột
+            # Chuẩn bị thông tin dataset đầy đủ hơn, thêm danh sách cột
                 relevant.append({
                     "name": ds.get("name"),
                     "description": ds.get("description"),
@@ -70,37 +70,27 @@ Câu nói:
         type_ = self.is_automl_request(message)
 
         if type_ == "Model":
+            all_datasets = self.get_all_datasets()
+
+            dataset_info_text = "Hiện tại tôi có một số dataset và mô tả như sau. Tôi nên sử dụng dataset nào hay đi thu thập bên ngo:\n"
+            if all_datasets:
+                for ds in all_datasets:
+                    dataset_info_text += f"- {ds['name']} (Số mẫu: {ds['size']}, Mô tả: {ds['description']})\n"
+            else:
+                dataset_info_text += "Chưa tìm thấy dataset phù hợp trong hệ thống.\n"
+
             prompt = f"""
 Bạn là trợ lý AutoML. Với yêu cầu: "{message}"
+{dataset_info_text}
 Hãy tư vấn chi tiết từng bước giúp người dùng như sau:
 
 1. Xác định nhiệm vụ học máy phù hợp (chọn 1 trong Image Classification, Text Classification, Tabular Classification, Multimodal Classification và giải thích)
-VD trả lời câu 1: Multimodal Classification la lựa chọn tốt nhất cho dự an nay vì bạn sẽ lam việc với hai loại dữ liệu khác nhau: hình ảnh (ảnh sản phẩm) và văn bản (thông tin mô tả sản phẩm). Mô hình sẽ học cách kết hợp thông tin từ cả hai nguồn để đưa ra dự đoán chính xác về loại mỹ phẩm.
 2. Hướng dẫn xây dựng hoặc thu thập tập dữ liệu (cách lấy dữ liệu, đặc trưng cần chú ý, kích thước mẫu) và Dataset gợi ý (nếu có) có thể dùng được (có thể tìm trong database hệ thống) 
-VD trả lời câu 2:
-Hiện nay trong các dataset của bạn tôi không thấy loại nào phù hợp nhưng tôi sẽ hướng dẫn bạn thu thập dữ liệu như sau:
- -	Thu thập dữ liệu: Bạn cần thu thập ảnh sản phẩm và thông tin mô tả của chúng từ Shopee. Bạn có thể sử dụng API của Shopee (nếu có) hoặc thu thập dữ liệu thủ công từ trang web.
-Ví dụ: Một tập dữ liệu có thể bao gồm:
--	Hình ảnh: Ánh của các sản phẩm như son môi, kem dưỡng da, phấn trang điểm.
--	Thông tin mô tả: Tên sản phẩm, loại sản phẩm, thành phần, công dụng, giá cả.
--	 Chọn đặc trưng: Đối với hình ảnh, bạn có thể sử dụng các đặc trưng như kích thước, màu sắc, và hình dạng. Đối với văn bản, bạn có thể sử dụng các từ khóa và mô tả sản phẩm.
--	Kich thưoc tập dữ liệu: Một tập dữ liệu tối thieu nên có từ 1000 đến 5000 mẫu để đảm bảo mô hình có đủ thông tin để học.
-3. Cách gán nhãn cho tập dữ liệu (ví dụ cụ thể)
-Ví dụ trả lời câu 3:
-Mỗi sản phẩm trong tập dữ liệu căn được gán nhãn với loại mỹ phẩm tương ứng. Ví dụ:
--	Son môi: "Son môi"
--	Kem dưỡng da: "Kem dưỡng da"
--	Phan trang điểm: "Phan trang điểm" Gan nhãn nay sẽ giup mô hình học cách phân loại sản phẩm dựa trên hình ảnh và thông tin mô tả.
-
+3. Cách gán nhãn cho tập dữ liệu (có ví dụ cụ thể)
 4. Cách đánh giá mô hình gồm các chỉ số: 
 - độ chính xác (Accuracy), 
 - Độ chính xác (Precision)
 - Độ nhảy cảm (Recall) 
-VD trả lời câu 4: 
-Để đánh giá mô hình, bạn có thể sử dụng các chỉ số sau:
--	Độ chính xác (Accuracy): Tỷ lệ phần trăm dự đoán đúng so với tổng số dự đoán. Ví dụ, nếu mô hình dự đoán đúng 80 trên 100 sản phẩm, độ chính xác là 80%.
--	Độ chính xác (Precision): Tỷ lệ dự đoán đúng trong số các dự đoán tích cực. Ví dụ, nếu mô hình dự đoán 50 sản phẩm là "Son môi" và 40 trong số đó là đúng, độ chính xác là 80%.
--	Độ nhạy (Recall): Tỷ lệ sản phẩm thực sự là "Son môi" mà mô hình đã dự đoán đúng. Nếu có 60 sản phẩm thực sự là "Son môi" và mô hình dự đoán đúng 40, độ nhạy là 66.67%.
 
 Sau đó, ở cuối hãy gợi ý dự án dưới dạng JSON gồm các trường:
 - project_name
@@ -113,6 +103,7 @@ Trả lời theo cấu trúc:
 - Phần JSON (mã code block)
 """
             try:
+                print("dhsaoihdoihsodi" + prompt +'\n')
                 response_text = self.aiAssistant.analyze_message(prompt)
 
                 # Cố gắng tách JSON trong block ```json ... ```
