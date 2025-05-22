@@ -68,6 +68,7 @@ async function sendMessage() {
       const htmlChunk = chunk.replace(/\n/g, '<br>'); // <-- Sửa tại đây
       messageContentDiv.innerHTML += htmlChunk;
       chatMessages.scrollTop = chatMessages.scrollHeight;
+   
     }
 
   } catch (error) {
@@ -75,7 +76,6 @@ async function sendMessage() {
     errorMessage.classList.add('message', 'assistant');
     errorMessage.innerHTML = `
       <img src="image/logo.png" alt="Cat Assistant" />
-
       <div class="message-content">❌ Error: ${error.message}</div>
     `;
     chatMessages.appendChild(errorMessage);
