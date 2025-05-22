@@ -79,6 +79,7 @@
       height: 42px;
       border-radius: 50%;
     }
+
     .user-dropdown {
       display: none;
       position: absolute;
@@ -123,13 +124,13 @@
       font-size: 12px;
       font-weight: bold;
     }
+
     .user-dropdown .profile-section .user-info .email {
       font-size: 12px;
       color: #979797;
     }
 
     .user-dropdown .menu-item {
-
       width: 233px;
       height: 26px;
       margin: 5px auto;
@@ -145,7 +146,6 @@
     }
 
     .user-dropdown .menu-item:hover {
-
       background-color: rgba(201, 234, 255, 0.65);
     }
 
@@ -246,6 +246,7 @@
       padding: 15px;
       border-radius: 5px;
     }
+
     .config-group {
       display: flex;
       gap: 20px;
@@ -271,65 +272,19 @@
       border-radius: 5px;
       width: 200px;
       cursor: pointer;
-      position: relative;
-    }
-
-    .category-select.active .select-dropdown {
-      display: block;
-    }
-
-    .select-dropdown {
-      display: none;
-      position: absolute;
-      top: 100%;
-      left: 0;
-      width: 100%;
       background-color: #FFFFFF;
-      border: 1px solid rgba(0, 0, 0, 0.5);
-      border-radius: 5px;
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-      z-index: 10;
+      font-family: 'Roboto', sans-serif;
     }
 
-    .dropdown-search {
-      width: 100%;
-      padding: 8px;
-      border: none;
-      border-bottom: 1px solid rgba(0, 0, 0, 0.5);
-      font-size: 16px;
-      color: #737373;
-      box-sizing: border-box;
-    }
-
-    .dropdown-search:focus {
+    .category-select:focus {
       outline: none;
-      color: #000000;
+      border-color: #1677FF;
     }
 
-    .dropdown-search:not(:placeholder-shown) {
-      color: #000000;
-    }
-
-    .dropdown-options {
-      max-height: 150px;
-      overflow-y: auto;
-    }
-
-    .dropdown-option {
+    .category-select option {
       font-size: 16px;
       color: #000000;
       padding: 8px;
-      cursor: pointer;
-    }
-
-    .dropdown-option:hover {
-      font-weight: 500;
-    }
-
-    .dropdown-option.selected {
-      background-color: rgba(22, 119, 255, 0.1);
-      border: 1px solid rgba(22, 119, 255, 0.25);
-      border-radius: 10px;
     }
 
     .data-table {
@@ -459,31 +414,25 @@
         <div class="config-group">
           <div class="config-item">
             <label class="config-label">Target Column</label>
-            <div class="category-select" id="targetColumnSelect" onclick="toggleColumnDropdown('target')">Select a category</div>
-            <div class="select-dropdown" id="targetDropdown">
-              <input type="text" class="dropdown-search" id="targetSearch" placeholder="Find an item" oninput="filterOptions('target')" />
-              <div class="dropdown-options" id="targetOptions">
-                <div class="dropdown-option" onclick="selectOption('target', 'Product_Base_ID')">Product_Base_ID</div>
-                <div class="dropdown-option" onclick="selectOption('target', 'Report_ID')">Report_ID</div>
-                <div class="dropdown-option" onclick="selectOption('target', 'Product_Name')">Product_Name</div>
-                <div class="dropdown-option" onclick="selectOption('target', 'url_thumbnail')">url_thumbnail</div>
-                <div class="dropdown-option" onclick="selectOption('target', 'report_name')">report_name</div>
-              </div>
-            </div>
+            <select class="category-select" id="targetColumnSelect">
+              <option value="" disabled selected>Select a category</option>
+              <option value="Product_Base_ID">Product_Base_ID</option>
+              <option value="Report_ID">Report_ID</option>
+              <option value="Product_Name">Product_Name</option>
+              <option value="url_thumbnail">url_thumbnail</option>
+              <option value="report_name">report_name</option>
+            </select>
           </div>
           <div class="config-item">
             <label class="config-label">Image Column</label>
-            <div class="category-select" id="imageColumnSelect" onclick="toggleColumnDropdown('image')">Select a category</div>
-            <div class="select-dropdown" id="imageDropdown">
-              <input type="text" class="dropdown-search" id="imageSearch" placeholder="Find an item" oninput="filterOptions('image')" />
-              <div class="dropdown-options" id="imageOptions">
-                <div class="dropdown-option" onclick="selectOption('image', 'Product_Base_ID')">Product_Base_ID</div>
-                <div class="dropdown-option" onclick="selectOption('image', 'Report_ID')">Report_ID</div>
-                <div class="dropdown-option" onclick="selectOption('image', 'Product_Name')">Product_Name</div>
-                <div class="dropdown-option" onclick="selectOption('image', 'url_thumbnail')">url_thumbnail</div>
-                <div class="dropdown-option" onclick="selectOption('image', 'report_name')">report_name</div>
-              </div>
-            </div>
+            <select class="category-select" id="imageColumnSelect">
+              <option value="" disabled selected>Select a category</option>
+              <option value="Product_Base_ID">Product_Base_ID</option>
+              <option value="Report_ID">Report_ID</option>
+              <option value="Product_Name">Product_Name</option>
+              <option value="url_thumbnail">url_thumbnail</option>
+              <option value="report_name">report_name</option>
+            </select>
           </div>
         </div>
         <div class="data-table-container">
@@ -571,7 +520,6 @@
             </tbody>
           </table>
         </div>
-
       </div>
       <div class="footer">
         <button class="previous-step-btn" onclick="window.location.href='choosedatasetstep2.html'">Previous Step</button>
@@ -586,71 +534,31 @@
       dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
     }
 
-    function toggleColumnDropdown(type) {
-      const select = document.getElementById(`${type}ColumnSelect`);
-      select.classList.toggle('active');
-      const searchInput = document.getElementById(`${type}Search`);
-      searchInput.value = ''; // Clear search input when opening
-      filterOptions(type); // Reset options visibility
-      const otherType = type === 'target' ? 'image' : 'target';
-      const otherSelect = document.getElementById(`${otherType}ColumnSelect`);
-      otherSelect.classList.remove('active');
-    }
-
-    function selectOption(type, value) {
-      const select = document.getElementById(`${type}ColumnSelect`);
-      select.textContent = value;
-      select.classList.remove('active');
+    function checkSelections() {
+      const targetSelect = document.getElementById('targetColumnSelect');
+      const imageSelect = document.getElementById('imageColumnSelect');
       const nextStepBtn = document.getElementById('nextStepBtn');
-      const targetSelected = document.getElementById('targetColumnSelect').textContent !== 'Select a category';
-      const imageSelected = document.getElementById('imageColumnSelect').textContent !== 'Select a category';
+
+      const targetSelected = targetSelect.value !== '';
+      const imageSelected = imageSelect.value !== '';
+
       if (targetSelected && imageSelected) {
         nextStepBtn.classList.add('active');
         nextStepBtn.disabled = false;
         nextStepBtn.onclick = function() { window.location.href = 'automaticconfigstep4.html'; };
-      }
-      document.getElementById(`${type}Search`).value = '';
-      filterOptions(type);
-      // Remove selected class from all options and add to the clicked one
-      const options = document.getElementById(`${type}Options`).getElementsByClassName('dropdown-option');
-      for (let option of options) {
-        option.classList.remove('selected');
-      }
-      event.target.classList.add('selected');
-
-    }
-
-    function filterOptions(type) {
-      const searchInput = document.getElementById(`${type}Search`).value.toLowerCase();
-      const optionsContainer = document.getElementById(`${type}Options`);
-      const options = optionsContainer.getElementsByClassName('dropdown-option');
-      for (let option of options) {
-        const text = option.textContent.toLowerCase();
-        option.style.display = text.includes(searchInput) ? 'block' : 'none';
+      } else {
+        nextStepBtn.classList.remove('active');
+        nextStepBtn.disabled = true;
       }
     }
 
-    document.querySelectorAll('.dropdown-option').forEach(option => {
-      option.addEventListener('click', function(event) {
-        const type = this.parentElement.parentElement.id === 'targetDropdown' ? 'target' : 'image';
-        selectOption(type, this.textContent);
-
-      });
-    });
+    document.getElementById('targetColumnSelect').addEventListener('change', checkSelections);
+    document.getElementById('imageColumnSelect').addEventListener('change', checkSelections);
 
     document.addEventListener('click', function(event) {
       const userDropdown = document.getElementById('userDropdown');
-      const targetSelect = document.getElementById('targetColumnSelect');
-      const imageSelect = document.getElementById('imageColumnSelect');
       if (!event.target.closest('.user')) {
         userDropdown.style.display = 'none';
-      }
-
-      if (!targetSelect.contains(event.target)) {
-        targetSelect.classList.remove('active');
-      }
-      if (!imageSelect.contains(event.target)) {
-        imageSelect.classList.remove('active');
       }
     });
   </script>

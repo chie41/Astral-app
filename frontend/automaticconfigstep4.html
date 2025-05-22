@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ASTRAL - Automatic Config Step 4</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@200;300;400;500;700&family=Crimson+Text:wght@400&family=Inter:wght@600&display=swap" rel="stylesheet" />
+  <style>
+    body {
+      font-family: 'Roboto', sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #FFFFFF;
+      overflow-x: hidden;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .navbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 20px;
+      border-bottom: 1px solid #DEECFF;
+      white-space: nowrap;
+    }
+
+    .navbar .logo-container {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .navbar img {
+      height: 40px;
+      border-radius: 50%;
+    }
+
+    .logo-text {
+      font-family: 'Crimson Text', serif;
+      font-size: 30px;
+      color: #000000;
+      margin-right: 30px;
+    }
+
+    .navbar .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .navbar a {
+      text-decoration: none;
+      color: #000000;
+      font-size: 16px;
+    }
+
+    .navbar a.active {
+      color: #000000;
+      border-bottom: none;
+    }
+
+    .navbar a:hover {
+      color: #1677FF;
+      text-decoration: underline;
+      text-decoration-color: #1677FF;
+    }
+
+    .user {
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+    }
+
+    .user img {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+    }
+
+    .dropdown {
+      display: none;
+      position: absolute;
+      top: 50px;
+      right: 0;
+      width: 256px;
+      height: 309px;
+      background-color: #FFFFFF;
+      border: 1px solid #DEECFF;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      z-index: 100;
+    }
+
+    .dropdown .profile-section {
+      width: 233px;
+      height: 100px;
+      margin: 10px auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      border-bottom: 1px solid #DEECFF;
+    }
+
+    .dropdown .profile-section img {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+    }
+
+    .dropdown .profile-section .user-info {
+      text-align: center;
+    }
+
+    .dropdown .profile-section .user-info span {
+      display: block;
+    }
+
+    .dropdown .profile-section .user-info .username {
+      font-size: 12px;
+      font-weight: bold;
+    }
+
+    .dropdown .profile-section .user-info .email {
+      font-size: 12px;
+      color: #979797;
+    }
+
+    .dropdown .menu-item {
+      width: 233px;
+      height: 26px;
+      margin: 5px auto;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding-left: 10px;
+      font-size: 12px;
+      color: #000000;
+      border-radius: 5px;
+      cursor: pointer;
+      border: 1px solid rgba(22, 119, 255, 0.7);
+      white-space: nowrap;
+    }
+
+    .dropdown .menu-item:hover {
+      background-color: rgba(201, 234, 255, 0.65);
+    }
+
+    .main {
+      padding: 20px;
+      display: flex;
+      gap: 20px;
+      flex: 1;
+    }
+
+    .header {
+      font-size: 16px;
+      font-weight: 500;
+      margin-bottom: 20px;
+      white-space: nowrap;
+    }
+
+    .left-column {
+      width: 200px;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .step {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+    }
+
+    .step-number {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background-color: #A6A6A6;
+      color: #FFFFFF;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      transition: background-color 0.2s ease;
+    }
+
+    .step.completed .step-number {
+      background-color: #1677FF;
+    }
+
+    .step.completed .step-text {
+      color: #1677FF;
+    }
+
+    .step-text {
+      font-size: 14px;
+      color: #000000;
+      padding: 5px 10px;
+      transition: background-color 0.2s ease, color 0.2s ease;
+      white-space: nowrap;
+    }
+
+    .step:hover .step-number {
+      background-color: #1677FF;
+    }
+
+    .step:hover .step-text {
+      color: #1677FF;
+      background-color: rgba(22, 119, 255, 0.1);
+    }
+
+    .cancel-link {
+      font-size: 12px;
+      color: #A6A6A6;
+      text-decoration: none;
+      margin-top: 10px;
+      white-space: nowrap;
+    }
+
+    .cancel-link:hover {
+      text-decoration: underline;
+    }
+
+    .right-section {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .config-section {
+      padding: 15px 0;
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+    }
+
+    .config-title {
+      font-size: 20px;
+      font-weight: 500;
+      color: #000000;
+      margin-bottom: 20px;
+      white-space: nowrap;
+    }
+
+    .input-group {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      margin-bottom: 15px;
+      width: 40%;
+    }
+
+    .input-label {
+      font-size: 16px;
+      font-weight: 500;
+      margin-right: 10px;
+      white-space: nowrap;
+    }
+
+    .input-field {
+      width: 300%;
+      padding: 8px;
+      border: 1px solid rgba(0, 0, 0, 0.5);
+      border-radius: 5px;
+      font-size: 12px;
+      color: #979797;
+      font-family: 'Roboto', sans-serif;
+      text-align: left;
+    }
+
+    .input-field:focus {
+      outline: none;
+    }
+
+    .input-field:not(:placeholder-shown) {
+      color: #000000;
+    }
+
+    .perform-level-options {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      width: 300%;
+    }
+
+    .perform-level-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px;
+      border: 1px solid rgba(0, 0, 0, 0.5);
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 12px;
+      color: #000000;
+      font-family: 'Roboto', sans-serif;
+    }
+
+    .perform-level-item img {
+      width: 16px;
+      height: 16px;
+    }
+
+    .perform-level-item:hover {
+      border-color: #1677FF;
+      background-color: rgba(22, 119, 255, 0.1);
+    }
+
+    .tables-container {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      width: 50%;
+    }
+
+    .instance-config,
+    .cost-estimate {
+      background-color: #FFFFFF;
+      padding: 15px;
+      border-radius: 5px;
+      border: 1px solid rgba(0, 0, 0, 0.25);
+    }
+
+    .instance-title,
+    .cost-title {
+      font-size: 16px;
+      font-weight: 500;
+      margin-bottom: 10px;
+      white-space: nowrap;
+    }
+
+    .instance-table {
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .instance-column {
+      width: 48%;
+    }
+
+    .instance-item {
+      font-size: 14px;
+      font-weight: 300;
+      color: #000000;
+      margin: 5px 0;
+      white-space: nowrap;
+    }
+
+    .cost-item {
+      font-size: 14px;
+      font-weight: 300;
+      color: #000000;
+      margin: 5px 0;
+      display: flex;
+      justify-content: space-between;
+      white-space: nowrap;
+    }
+
+    .cost-item span.value {
+      color: #1677FF;
+    }
+
+    .find-instance-btn {
+      font-size: 12px;
+      padding: 10px 20px;
+      background-color: #1677FF;
+      color: #FFFFFF;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      font-family: 'Roboto', sans-serif;
+      margin-top: 10px;
+    }
+
+    .footer {
+      margin-top: auto;
+      display: flex;
+      justify-content: space-between;
+      padding: 20px 0;
+    }
+
+    .previous-step-btn,
+    .next-step-btn {
+      font-size: 12px;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+      font-family: 'Roboto', sans-serif;
+      white-space: nowrap;
+    }
+
+    .previous-step-btn {
+      color: #979797;
+      background: none;
+    }
+
+    .next-step-btn {
+      background-color: #979797;
+      color: #FFFFFF;
+      cursor: not-allowed;
+    }
+
+    .next-step-btn.active {
+      background-color: #1677FF;
+      cursor: pointer;
+    }
+
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .modal-content {
+      background-color: #FFFFFF;
+      border: 1px solid rgba(0, 0, 0, 0.25);
+      border-radius: 10px;
+      padding: 20px;
+      text-align: center;
+      position: relative;
+    }
+
+    .modal-content img {
+      max-width: 100%;
+      height: auto;
+    }
+
+    .close-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      font-size: 24px;
+      cursor: pointer;
+      color: #000000;
+    }
+  </style>
+</head>
+<body>
+  <div class="navbar">
+    <div class="logo-container">
+      <img src="image/logo.png" alt="Logo" />
+      <span class="logo-text">Astral</span>
+      <div class="nav-links">
+        <a href="dashboard.html" class="active">Projects</a>
+        <a href="#">Dataset</a>
+      </div>
+    </div>
+    <div class="user" onclick="toggleDropdown()">
+      <img src="image/avatar.png" alt="Avatar" />
+      <span>Username</span>
+      <div class="dropdown" id="userDropdown">
+        <div class="profile-section">
+          <img src="image/avatar.png" alt="Avatar" />
+          <div class="user-info">
+            <span class="username">Username</span>
+            <span class="email">usernamedeptrainhatng@gmail.com</span>
+          </div>
+        </div>
+        <div class="menu-item"><span style="font-family: 'Roboto', sans-serif;">👤</span> My profile</div>
+        <div class="menu-item"><span style="font-family: 'Roboto', sans-serif;">📁</span> My projects</div>
+        <div class="menu-item"><span style="font-family: 'Roboto', sans-serif;">💻</span> My datasets</div>
+        <div class="menu-item"><span style="font-family: 'Roboto', sans-serif;">⚙</span> Settings</div>
+        <div class="menu-item"><span style="font-family: 'Roboto', sans-serif;">🚪</span> Logout</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="main">
+    <div class="left-column">
+      <div class="header">Create a new project</div>
+      <div class="step completed">
+        <span class="step-number">1</span>
+        <span class="step-text">Project Details</span>
+      </div>
+      <div class="step completed">
+        <span class="step-number">2</span>
+        <span class="step-text">Choose Dataset</span>
+      </div>
+      <div class="step completed">
+        <span class="step-number">3</span>
+        <span class="step-text">Data Configuration</span>
+      </div>
+      <div class="step">
+        <span class="step-number">4</span>
+        <span class="step-text">Automatic Config</span>
+      </div>
+      <a href="boxchat.html" class="cancel-link">Cancel</a>
+    </div>
+
+    <div class="right-section">
+      <div class="config-section">
+        <div>
+          <div class="config-title">Automatic Configuration</div>
+          <div class="input-group">
+            <div class="input-label">Training Duration</div>
+            <input class="input-field" type="text" placeholder="Hour" />
+            <div class="input-label">Expected Accuracy</div>
+            <input class="input-field" type="text" placeholder="%" />
+            <div class="input-label">Perform Level</div>
+            <div class="perform-level-options">
+              <div class="perform-level-item">
+                <img src="image/icon3.png" alt="Basic Icon" />
+                <span>Basic Configuration</span>
+              </div>
+              <div class="perform-level-item">
+                <img src="image/icon4.png" alt="Balanced Icon" />
+                <span>Balanced Setup</span>
+              </div>
+              <div class="perform-level-item">
+                <img src="image/icon5.png" alt="Enhanced Icon" />
+                <span>Enhanced Performance</span>
+              </div>
+              <div class="perform-level-item">
+                <img src="image/icon6.png" alt="High Icon" />
+                <span>High Performance</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="tables-container">
+          <div class="instance-config">
+            <div class="instance-title">Instance Configuration</div>
+            <div class="instance-table">
+              <div class="instance-column">
+                <div class="instance-item">Hardware Specs</div>
+                <div class="instance-item">⚡ GPUs:</div>
+                <div class="instance-item">💾 Storage:</div>
+                <div class="instance-item">🌐 Provider:</div>
+              </div>
+              <div class="instance-column">
+                <div class="instance-item">Training Detail</div>
+                <div class="instance-item">⏰ Duration: 0.5 hours</div>
+                <div class="instance-item">💵 Cost:</div>
+              </div>
+            </div>
+          </div>
+          <div class="cost-estimate">
+            <div class="cost-title">Cost Estimate</div>
+            <div class="cost-item">Hourly Rate:</div>
+            <div class="cost-item">Training Hours: <span class="value">0.5 hours</span></div>
+            <div class="cost-item">Estimate Total:</div>
+          </div>
+          <button class="find-instance-btn">Find Instance</button>
+        </div>
+      </div>
+      <div class="footer">
+        <button class="previous-step-btn" onclick="window.location.href='dataconfigurationstep3.html'">Previous Step</button>
+        <button id="nextStepBtn" class="next-step-btn" disabled onclick="showPopup()">Start Training</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="trainingPopup">
+    <div class="modal-content">
+      <span class="close-btn" onclick="closePopup()">&times;</span>
+      <img src="image/training.png" alt="Training Popup" />
+    </div>
+  </div>
+
+  <script src="functions.js"></script>
+  <script>
+    function toggleDropdown() {
+      const dropdown = document.getElementById('userDropdown');
+      dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+    }
+
+    function showPopup() {
+      if (!document.getElementById('nextStepBtn').disabled) {
+        const popup = document.getElementById('trainingPopup');
+        popup.style.display = 'flex';
+      }
+    }
+
+    function closePopup() {
+      const popup = document.getElementById('trainingPopup');
+      popup.style.display = 'none';
+      window.location.href = 'dashboard.html';
+    }
+
+    const inputs = document.querySelectorAll('input');
+    const performLevelItems = document.querySelectorAll('.perform-level-item');
+    const nextStepBtn = document.getElementById('nextStepBtn');
+
+    inputs.forEach(input => {
+      input.addEventListener('input', () => {
+        const hasInput = Array.from(inputs).some(input => input.value.trim() !== '');
+        if (hasInput) {
+          nextStepBtn.classList.add('active');
+          nextStepBtn.disabled = false;
+        } else {
+          nextStepBtn.classList.remove('active');
+          nextStepBtn.disabled = true;
+        }
+      });
+    });
+
+    performLevelItems.forEach(item => {
+      item.addEventListener('click', () => {
+        performLevelItems.forEach(i => i.style.borderColor = 'rgba(0, 0, 0, 0.5)');
+        item.style.borderColor = '#1677FF';
+        nextStepBtn.classList.add('active');
+        nextStepBtn.disabled = false;
+      });
+    });
+  </script>
+</body>
+</html>
