@@ -1,16 +1,21 @@
-# api/api.py
+#service/chatbot/api.py
 from fastapi import APIRouter, Request
 from service.chatbot.session import ChatSession
+from pydantic import BaseModel
 
 router = APIRouter()
 
 sessions = {}  # key: user_id hoặc session_id
 
+class Request(BaseModel):
+    user_id: str = "default"
+    message: str
+
+
 @router.post("/chat")
 async def chat(request: Request):
-    body = await request.json()
-    user_id = body.get("user_id", "default")
-    message = body["message"]
+    user_id = request.user_id
+    message = request.message
 
     if user_id not in sessions:
         sessions[user_id] = ChatSession()
@@ -18,10 +23,8 @@ async def chat(request: Request):
     session = sessions[user_id]
 
     if session.status == "suggesting":
-        reply = session.suggest_project(message)
-    elif message.lower() == "tạo project":
-        reply = session.confirm_create_project()
-    else:
+        reply = session.handle_message(message)
+    elif session.status == "configuring":
         reply = session.project.next_step()
 
     return {"response": reply}
