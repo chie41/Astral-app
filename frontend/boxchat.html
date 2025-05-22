@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ASTRAL - Box Chat</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@200;300;400;500;700&family=Crimson+Text:wght@400&display=swap" rel="stylesheet" />
+  <style>
+    body {
+      font-family: 'Roboto', sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #FFFFFF;
+      overflow-x: hidden;
+    }
+
+    .navbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 20px;
+      border-bottom: 1px solid #DEECFF;
+    }
+
+    .navbar .logo-container {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .navbar img {
+      height: 40px;
+      border-radius: 50%;
+    }
+
+    .logo-text {
+      font-family: 'Crimson Text', serif;
+      font-size: 30px;
+      color: #000000;
+      margin-right: 30px;
+    }
+
+    .navbar .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .navbar a {
+      text-decoration: none;
+      color: #000000;
+      font-size: 16px;
+    }
+
+    .navbar a.active {
+      color: #000000;
+      border-bottom: none;
+    }
+
+    .navbar a:hover {
+      color: #1677FF;
+      text-decoration: underline;
+      text-decoration-color: #1677FF;
+    }
+
+    .user {
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+    }
+
+    .user img {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+    }
+
+    .dropdown {
+      display: none;
+      position: absolute;
+      top: 50px;
+      right: 0;
+      width: 256px;
+      height: 309px;
+      background-color: #FFFFFF;
+      border: 1px solid #DEECFF;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      z-index: 100;
+    }
+
+    .dropdown .profile-section {
+      width: 233px;
+      height: 100px;
+      margin: 10px auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      border-bottom: 1px solid #DEECFF;
+    }
+
+    .dropdown .profile-section img {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+    }
+
+    .dropdown .profile-section .user-info {
+      text-align: center;
+    }
+
+    .dropdown .profile-section .user-info span {
+      display: block;
+    }
+
+    .dropdown .profile-section .user-info .username {
+      font-size: 12px;
+      font-weight: bold;
+    }
+
+    .dropdown .profile-section .user-info .email {
+      font-size: 12px;
+      color: #979797;
+    }
+
+    .dropdown .menu-item {
+      width: 233px;
+      height: 26px;
+      margin: 5px auto;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding-left: 10px;
+      font-size: 12px;
+      color: #000000;
+      border-radius: 5px;
+      cursor: pointer;
+      border: 1px solid rgba(22, 119, 255, 0.7);
+    }
+
+    .dropdown .menu-item:hover {
+      background-color: rgba(201, 234, 255, 0.65);
+    }
+
+    .chat-container {
+      display: flex;
+      flex-direction: column;
+      height: calc(100vh - 61px);
+      position: relative;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .chat-messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      padding-bottom: 150px;
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    .message {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      max-width: 50%;
+    }
+
+    .message.assistant {
+      align-self: flex-start;
+    }
+
+    .message.user {
+      align-self: flex-end;
+    }
+
+    .message img {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+    }
+
+    .message-content {
+      padding: 10px;
+      border-radius: 10px;
+      font-size: 16px;
+    }
+
+    .message.assistant .message-content {
+      background-color: transparent;
+      border: none;
+    }
+
+    .message.user .message-content {
+      background-color: rgba(22, 119, 255, 0.1);
+      border: 1px solid rgba(22, 119, 255, 0.1);
+      border-radius: 10px;
+    }
+
+    .assistant-header {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      margin: 20px 0;
+      position: absolute;
+      top: 30%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    .assistant-header.hidden {
+      display: none;
+    }
+
+    .assistant-header img {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      margin-bottom: 10px;
+    }
+
+    .assistant-header h2 {
+      font-size: 24px;
+      color: #000000;
+      margin: 0;
+    }
+
+    .assistant-header p {
+      font-size: 12px;
+      color: #000000;
+      font-weight: 300;
+      margin: 5px 0 0;
+    }
+
+    .input-area {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background-color: #FFFFFF;
+      padding: 10px 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border-top: 1px solid #DEECFF;
+    }
+
+    .input-container {
+      position: relative;
+      flex: 1;
+      margin: 0 20px;
+    }
+
+    .chat-input {
+      width: 100%;
+      height: 115px;
+      background-color: #F2F3F6;
+      border: none;
+      border-radius: 10px;
+      padding: 10px;
+      font-size: 16px;
+      color: #000000;
+      resize: none;
+      font-family: 'Roboto', sans-serif;
+      box-sizing: border-box;
+    }
+
+    .chat-input::placeholder {
+      color: #979797;
+      font-size: 16px;
+    }
+
+    .chat-input:focus {
+      outline: none;
+    }
+
+    .send-btn {
+      width: 50px;
+      height: 50px;
+      background: url('narrow.png') no-repeat center;
+      background-size: contain;
+      border: none;
+      position: absolute;
+      right: 10px;
+      bottom: 15px;
+      border-radius: 50%;
+      cursor: not-allowed;
+    }
+
+    .send-btn.active {
+      background: url('bluenarrow.png') no-repeat center;
+      background-size: contain;
+      border-radius: 50%;
+      cursor: pointer;
+    }
+
+    .version-label {
+      position: absolute;
+      bottom: 15px;
+      left: 10px;
+      width: 110px;
+      height: 25px;
+      background-color: #FFFFFF;
+      border: 1px solid #000000;
+      border-radius: 5px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      cursor: pointer;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+
+    .modal-content {
+      background-color: #FFFFFF;
+      border-radius: 10px;
+      padding: 20px;
+      width: 400px;
+      text-align: center;
+      position: relative;
+    }
+
+    .modal-content img {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      margin-bottom: 10px;
+    }
+
+    .modal-content p {
+      font-size: 16px;
+      font-weight: 500;
+      margin: 10px 0 20px;
+      text-align: center;
+    }
+
+    .modal-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .modal-buttons button {
+      padding: 10px 20px;
+      border-radius: 5px;
+      border: 1px solid #000000;
+      cursor: pointer;
+      font-size: 14px;
+      background-color: #1677FF;
+      color: #FFFFFF;
+    }
+
+    .modal-buttons .cancel-btn {
+      background-color: #1677FF;
+      border: 1px solid #000000;
+    }
+
+    .modal-buttons .confirm-btn {
+      background-color: #1677FF;
+      border: 1px solid #000000;
+    }
+
+    .create-btn {
+      width: 80px;
+      height: 20px;
+      background-color: #FFFFFF;
+      border: 1px solid #000000;
+      border-radius: 5px;
+      font-size: 12px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 10px 0;
+    }
+
+    .instructions {
+      margin-top: 10px;
+      text-align: left;
+      font-size: 16px;
+    }
+
+    .instructions h3 {
+      font-size: 16px;
+      margin-bottom: 10px;
+    }
+
+    .instructions ol {
+      padding-left: 20px;
+    }
+
+    .instructions li {
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="navbar">
+    <div class="logo-container">
+      <img src="logo.png" alt="Logo" />
+      <span class="logo-text">Astral</span>
+      <div class="nav-links">
+        <a href="dashboard.html" class="active">Projects</a>
+        <a href="#">Dataset</a>
+      </div>
+    </div>
+    <div class="user" onclick="toggleDropdown()">
+      <img src="avatar.png" alt="Avatar" />
+      <span>Username</span>
+      <div class="dropdown" id="userDropdown">
+        <div class="profile-section">
+          <img src="avatar.png" alt="Avatar" />
+          <div class="user-info">
+            <span class="username">Username</span>
+            <span class="email">usernamedeptrainhatng@gmail.com</span>
+          </div>
+        </div>
+        <div class="menu-item"><span style="font-family: 'Roboto', sans-serif;">👤</span> My profile</div>
+        <div class="menu-item"><span style="font-family: 'Roboto', sans-serif;">📁</span> My projects</div>
+        <div class="menu-item"><span style="font-family: 'Roboto', sans-serif;">💻</span> My datasets</div>
+        <div class="menu-item"><span style="font-family: 'Roboto', sans-serif;">⚙</span> Settings</div>
+        <div class="menu-item"><span style="font-family: 'Roboto', sans-serif;">🚪</span> Logout</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="chat-container">
+    <div class="chat-messages" id="chatMessages">
+      <div class="assistant-header" id="assistantHeader">
+        <img src="logo.png" alt="Cat Assistant" />
+        <h2>Hi, I’m your Cat Assistant.</h2>
+        <p>Moew~ How can I help you today?</p>
+      </div>
+    </div>
+
+    <div class="input-area">
+      <div class="input-container">
+        <textarea class="chat-input" id="chatInput" placeholder="Moew~ Describe your project!"></textarea>
+        <div class="version-label" onclick="sendMessage()">Cat Assistant (V1)</div>
+        <button class="send-btn" id="sendBtn" disabled></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal" id="confirmModal">
+    <div class="modal-content">
+      <img src="logo.png" alt="Cat Assistant" />
+      <p>Moew~ Are you sure you want to go out? It will be not save</p>
+      <div class="modal-buttons">
+        <button class="cancel-btn" onclick="closeModal()">Nah</button>
+        <button class="confirm-btn" onclick="confirmProject()">Yeah</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const chatInput = document.getElementById('chatInput');
+    const sendBtn = document.getElementById('sendBtn');
+    const chatMessages = document.getElementById('chatMessages');
+    const assistantHeader = document.getElementById('assistantHeader');
+    const API_URL = "http://localhost:8000/chat"; // Adjust this to your FastAPI backend URL
+
+    chatInput.addEventListener('input', function() {
+      if (chatInput.value.trim() !== '') {
+        chatInput.placeholder = '';
+        sendBtn.classList.add('active');
+        sendBtn.disabled = false;
+      } else {
+        chatInput.placeholder = 'Moew~ Describe your project!';
+        sendBtn.classList.remove('active');
+        sendBtn.disabled = true;
+      }
+    });
+
+    function toggleDropdown() {
+      const dropdown = document.getElementById('userDropdown');
+      dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+    }
+
+    async function sendMessage() {
+      assistantHeader.classList.add('hidden');
+
+      const messageText = chatInput.value.trim();
+      let userMessage = document.createElement('div');
+      userMessage.classList.add('message', 'user');
+      userMessage.innerHTML = `
+        <div class="message-content">${messageText || 'Hi, I want to create a machine learning model to predict future sales based on past transaction data. Can you help me?'}</div>
+      `;
+      chatMessages.appendChild(userMessage);
+
+      // Prepare payload for API
+      const payload = {
+        user_id: "default",
+        message: messageText || "Hi, I want to create a machine learning model to predict future sales based on past transaction data. Can you help me?"
+      };
+
+      try {
+        const response = await fetch(API_URL, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(payload)
+        });
+
+        if (!response.ok) {
+          throw new Error(`API error: ${response.status}`);
+        }
+
+        const data = await response.json();
+        let assistantResponse = data.response;
+
+        // Handle "Tôi đồng ý" case
+        if (messageText.toLowerCase() === 'tôi đồng ý') {
+          const confirmPayload = {
+            user_id: "default",
+            message: "tạo project"
+          };
+          const confirmResponse = await fetch(API_URL, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(confirmPayload)
+          });
+          const confirmData = await confirmResponse.json();
+          assistantResponse = confirmData.response;
+        }
+
+        // Create assistant message
+        const assistantMessage = document.createElement('div');
+        assistantMessage.classList.add('message', 'assistant');
+        assistantMessage.innerHTML = `
+          <img src="logo.png" alt="Cat Assistant" />
+          <div class="message-content">${assistantResponse}</div>
+        `;
+
+        // Add "Create" button if the response includes a project suggestion
+        if (assistantResponse.includes("Nếu bạn đồng ý, hãy nhập 'Tôi đồng ý'")) {
+          const createBtn = document.createElement('div');
+          createBtn.classList.add('create-btn');
+          createBtn.innerText = 'Create';
+          createBtn.onclick = openModal;
+          assistantMessage.querySelector('.message-content').appendChild(createBtn);
+        }
+
+        chatMessages.appendChild(assistantMessage);
+      } catch (error) {
+        const errorMessage = document.createElement('div');
+        errorMessage.classList.add('message', 'assistant');
+        errorMessage.innerHTML = `
+          <img src="logo.png" alt="Cat Assistant" />
+          <div class="message-content">❌ Error: ${error.message}</div>
+        `;
+        chatMessages.appendChild(errorMessage);
+      }
+
+      chatInput.value = '';
+      chatInput.placeholder = 'Moew~ Describe your project!';
+      sendBtn.classList.remove('active');
+      sendBtn.disabled = true;
+
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    function openModal() {
+      document.getElementById('confirmModal').style.display = 'flex';
+    }
+
+    function closeModal() {
+      document.getElementById('confirmModal').style.display = 'none';
+    }
+
+    function confirmProject() {
+      window.location.href = 'manualcreationstep1.html';
+    }
+
+    chatInput.addEventListener('keypress', function(e) {
+      if (e.key === 'Enter' && !e.shiftKey && chatInput.value.trim() !== '') {
+        e.preventDefault();
+        sendMessage();
+      }
+    });
+
+    sendBtn.addEventListener('click', function() {
+      if (!sendBtn.disabled) {
+        sendMessage();
+      }
+    });
+  </script>
+</body>
+</html>
