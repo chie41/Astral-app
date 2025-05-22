@@ -1,5 +1,5 @@
 // Định nghĩa URL API cho backend
-const API_URL = "http://localhost:8000/chat"; // URL API của backend cho chức năng chat
+const API_URL = "http://localhost:8000/api/chat"; // URL API của backend cho chức năng chat
 
 // Hàm bật/tắt dropdown của người dùng trong thanh điều hướng
 // Được gọi bởi: Nhấn vào hồ sơ người dùng (avatar + tên người dùng) trong thanh điều hướng
@@ -29,10 +29,14 @@ async function sendMessage() {
   `;
   chatMessages.appendChild(userMessage);
 
+
+
+
   const payload = {
     user_id: "default",
     message: messageText || "Hi, I want to create a machine learning model to predict future sales based on past transaction data. Can you help me?"
   };
+
 
   try {
     const response = await fetch(API_URL, {
@@ -46,9 +50,28 @@ async function sendMessage() {
     if (!response.ok) {
       throw new Error(`API error: ${response.status}`);
     }
+    //test
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder();
+    
+    let assistantMessage = document.createElement('div');
+    assistantMessage.classList.add('message', 'assistant');
+    assistantMessage.innerHTML = `<img src="image/logo.png" alt="Cat Assistant" /><div class="message-content"></div>`;
+    chatMessages.appendChild(assistantMessage);
+    const messageContentDiv = assistantMessage.querySelector('.message-content');
 
-    const data = await response.json();
-    let assistantResponse = data.response;
+    // Đọc stream dần
+     while(true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      const chunk = decoder.decode(value, { stream: true });
+      messageContentDiv.innerHTML += chunk;  // Cập nhật dần UI
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    //test
+    /*let assistantResponse = data.response;
+
 
     if (messageText.toLowerCase() === 'tôi đồng ý') {
       const confirmPayload = {
@@ -82,7 +105,7 @@ async function sendMessage() {
       assistantMessage.querySelector('.message-content').appendChild(createBtn);
     }
 
-    chatMessages.appendChild(assistantMessage);
+    chatMessages.appendChild(assistantMessage);*/
   } catch (error) {
     const errorMessage = document.createElement('div');
     errorMessage.classList.add('message', 'assistant');
