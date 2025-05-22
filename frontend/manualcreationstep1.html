@@ -401,6 +401,11 @@
 
   <script src="functions.js"></script>
   <script>
+    function toggleDropdown() {
+      const dropdown = document.getElementById('userDropdown');
+      dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+    }
+
     const projectNameInput = document.getElementById('projectName');
     const descriptionInput = document.getElementById('description');
     const nextStepBtn = document.getElementById('nextStepBtn');
@@ -423,6 +428,15 @@
     nextStepBtn.addEventListener('click', function() {
       if (!nextStepBtn.disabled) {
         window.location.href = 'choosedatasetstep2.html';
+      }
+    });
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', function(event) {
+      const dropdown = document.getElementById('userDropdown');
+      const userElement = document.querySelector('.user');
+      if (!userElement.contains(event.target)) {
+        dropdown.style.display = 'none';
       }
     });
   </script>

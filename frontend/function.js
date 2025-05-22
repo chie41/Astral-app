@@ -29,14 +29,16 @@ async function sendMessage() {
   `;
   chatMessages.appendChild(userMessage);
 
-
-
+  // Clear input immediately after sending (moved up from bottom)
+  chatInput.value = '';
+  chatInput.placeholder = 'Moew~ Describe your project!';
+  sendBtn.classList.remove('active');
+  sendBtn.disabled = true;
 
   const payload = {
     user_id: "default",
     message: messageText || "Hi, I want to create a machine learning model to predict future sales based on past transaction data. Can you help me?"
   };
-
 
   try {
     const response = await fetch(API_URL, {
@@ -54,21 +56,30 @@ async function sendMessage() {
     const reader = response.body.getReader();
     const decoder = new TextDecoder();
 
+    // Add loading dots to AI message
     let assistantMessage = document.createElement('div');
     assistantMessage.classList.add('message', 'assistant');
-    assistantMessage.innerHTML = `<img src="image/logo.png" alt="Cat Assistant" /><div class="message-content"></div>`;
+    assistantMessage.innerHTML = `
+      <img src="image/logo.png" alt="Cat Assistant" />
+      <div class="message-content"><span class="loading-dots"><span>.</span><span>.</span><span>.</span></span></div>
+    `;
     chatMessages.appendChild(assistantMessage);
     const messageContentDiv = assistantMessage.querySelector('.message-content');
 
     // Đọc stream dần
+    let isFirstChunk = true; // Track first chunk to clear loading dots
     while (true) {
       const { done, value } = await reader.read();
       if (done) break;
       const chunk = decoder.decode(value, { stream: true });
-      const htmlChunk = chunk.replace(/\n/g, '<br>'); // <-- Sửa tại đây
+      const htmlChunk = chunk.replace(/\n/g, '<br>');
+      if (isFirstChunk) {
+        // Clear loading dots on first chunk
+        messageContentDiv.innerHTML = '';
+        isFirstChunk = false;
+      }
       messageContentDiv.innerHTML += htmlChunk;
       chatMessages.scrollTop = chatMessages.scrollHeight;
-   
     }
 
   } catch (error) {
@@ -80,11 +91,6 @@ async function sendMessage() {
     `;
     chatMessages.appendChild(errorMessage);
   }
-
-  chatInput.value = '';
-  chatInput.placeholder = 'Moew~ Describe your project!';
-  sendBtn.classList.remove('active');
-  sendBtn.disabled = true;
 
   chatMessages.scrollTop = chatMessages.scrollHeight;
 }
