@@ -2,6 +2,7 @@
 from fastapi import APIRouter, Request
 from service.chatbot.session import ChatSession
 from pydantic import BaseModel
+from starlette.responses import StreamingResponse
 
 router = APIRouter()
 
@@ -24,7 +25,7 @@ async def chat(request: Request):
 
     if session.status == "suggesting":
         reply = session.handle_message(message)
+        return StreamingResponse(reply, media_type="text/plain")
     elif session.status == "configuring":
         reply = session.project.next_step()
-
-    return {"response": reply}
+        return {"response": reply}
