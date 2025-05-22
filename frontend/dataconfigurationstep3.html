@@ -79,7 +79,6 @@
       height: 42px;
       border-radius: 50%;
     }
-
     .user-dropdown {
       display: none;
       position: absolute;
@@ -124,13 +123,13 @@
       font-size: 12px;
       font-weight: bold;
     }
-
     .user-dropdown .profile-section .user-info .email {
       font-size: 12px;
       color: #979797;
     }
 
     .user-dropdown .menu-item {
+
       width: 233px;
       height: 26px;
       margin: 5px auto;
@@ -146,6 +145,7 @@
     }
 
     .user-dropdown .menu-item:hover {
+
       background-color: rgba(201, 234, 255, 0.65);
     }
 
@@ -246,7 +246,6 @@
       padding: 15px;
       border-radius: 5px;
     }
-
     .config-group {
       display: flex;
       gap: 20px;
@@ -572,6 +571,7 @@
             </tbody>
           </table>
         </div>
+
       </div>
       <div class="footer">
         <button class="previous-step-btn" onclick="window.location.href='choosedatasetstep2.html'">Previous Step</button>
@@ -617,6 +617,7 @@
         option.classList.remove('selected');
       }
       event.target.classList.add('selected');
+
     }
 
     function filterOptions(type) {
@@ -633,6 +634,7 @@
       option.addEventListener('click', function(event) {
         const type = this.parentElement.parentElement.id === 'targetDropdown' ? 'target' : 'image';
         selectOption(type, this.textContent);
+
       });
     });
 
@@ -643,6 +645,7 @@
       if (!event.target.closest('.user')) {
         userDropdown.style.display = 'none';
       }
+
       if (!targetSelect.contains(event.target)) {
         targetSelect.classList.remove('active');
       }

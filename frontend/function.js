@@ -70,6 +70,7 @@ async function sendMessage() {
     assistantMessage.classList.add('message', 'assistant');
     assistantMessage.innerHTML = `
       <img src="image/logo.png" alt="Cat Assistant" />
+
       <div class="message-content">${assistantResponse}</div>
     `;
 
@@ -87,6 +88,7 @@ async function sendMessage() {
     errorMessage.classList.add('message', 'assistant');
     errorMessage.innerHTML = `
       <img src="image/logo.png" alt="Cat Assistant" />
+
       <div class="message-content">❌ Error: ${error.message}</div>
     `;
     chatMessages.appendChild(errorMessage);
