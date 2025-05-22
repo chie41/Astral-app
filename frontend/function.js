@@ -1,5 +1,5 @@
 // Định nghĩa URL API cho backend
-const API_URL = "http://localhost:8000/chat"; // URL API của backend cho chức năng chat
+const API_URL = "http://localhost:8000/api/chat"; // URL API của backend cho chức năng chat
 
 // Hàm bật/tắt dropdown của người dùng trong thanh điều hướng
 // Được gọi bởi: Nhấn vào hồ sơ người dùng (avatar + tên người dùng) trong thanh điều hướng
@@ -29,10 +29,14 @@ async function sendMessage() {
   `;
   chatMessages.appendChild(userMessage);
 
+
+
+
   const payload = {
     user_id: "default",
     message: messageText || "Hi, I want to create a machine learning model to predict future sales based on past transaction data. Can you help me?"
   };
+
 
   try {
     const response = await fetch(API_URL, {
@@ -47,41 +51,26 @@ async function sendMessage() {
       throw new Error(`API error: ${response.status}`);
     }
 
-    const data = await response.json();
-    let assistantResponse = data.response;
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder();
 
-    if (messageText.toLowerCase() === 'tôi đồng ý') {
-      const confirmPayload = {
-        user_id: "default",
-        message: "tạo project"
-      };
-      const confirmResponse = await fetch(API_URL, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(confirmPayload)
-      });
-      const confirmData = await confirmResponse.json();
-      assistantResponse = confirmData.response;
-    }
-
-    const assistantMessage = document.createElement('div');
+    let assistantMessage = document.createElement('div');
     assistantMessage.classList.add('message', 'assistant');
-    assistantMessage.innerHTML = `
-      <img src="image/logo.png" alt="Cat Assistant" />
-      <div class="message-content">${assistantResponse}</div>
-    `;
+    assistantMessage.innerHTML = `<img src="image/logo.png" alt="Cat Assistant" /><div class="message-content"></div>`;
+    chatMessages.appendChild(assistantMessage);
+    const messageContentDiv = assistantMessage.querySelector('.message-content');
 
-    if (assistantResponse.includes("Nếu bạn đồng ý, hãy nhập 'Tôi đồng ý'")) {
-      const createBtn = document.createElement('div');
-      createBtn.classList.add('create-btn');
-      createBtn.innerText = 'Create';
-      createBtn.onclick = openModal;
-      assistantMessage.querySelector('.message-content').appendChild(createBtn);
+    // Đọc stream dần
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      const chunk = decoder.decode(value, { stream: true });
+      const htmlChunk = chunk.replace(/\n/g, '<br>'); // <-- Sửa tại đây
+      messageContentDiv.innerHTML += htmlChunk;
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+   
     }
 
-    chatMessages.appendChild(assistantMessage);
   } catch (error) {
     const errorMessage = document.createElement('div');
     errorMessage.classList.add('message', 'assistant');
@@ -136,7 +125,7 @@ function setupBoxChatListeners() {
   const chatInput = document.getElementById('chatInput');
   const sendBtn = document.getElementById('sendBtn');
 
-  chatInput.addEventListener('input', function() {
+  chatInput.addEventListener('input', function () {
     if (chatInput.value.trim() !== '') {
       chatInput.placeholder = '';
       sendBtn.classList.add('active');
@@ -148,14 +137,14 @@ function setupBoxChatListeners() {
     }
   });
 
-  chatInput.addEventListener('keypress', function(e) {
+  chatInput.addEventListener('keypress', function (e) {
     if (e.key === 'Enter' && !e.shiftKey && chatInput.value.trim() !== '') {
       e.preventDefault();
       sendMessage();
     }
   });
 
-  sendBtn.addEventListener('click', function() {
+  sendBtn.addEventListener('click', function () {
     if (!sendBtn.disabled) {
       sendMessage();
     }

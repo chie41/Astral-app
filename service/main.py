@@ -9,7 +9,7 @@ app.include_router(router, prefix="/api")  # đăng ký router
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5500"],  # hoặc ["http://localhost:5500"] nếu frontend chạy local
+    allow_origins=["*"],  # hoặc ["http://localhost:5500"] nếu frontend chạy local
     allow_methods=["*"],
     allow_headers=["*"],
 )

@@ -23,16 +23,12 @@ class OllamaClient:
         if response.status_code != 200:
             raise Exception(f"Ollama API error: {response.status_code} {response.text}")
 
-        full_response = ""
         for line in response.iter_lines():
             if line:
                 try:
                     chunk = json.loads(line.decode("utf-8"))
                     text = chunk.get("response", "")
                     print(text, end="", flush=True)
-                    full_response += text
-                    time.sleep(0.01)
+                    yield text  # Trả về từng phần text ngay lập tức
                 except json.JSONDecodeError as e:
                     print(f"[Decode Error] {e}", file=sys.stderr)
-        print()
-        return full_response
