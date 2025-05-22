@@ -16,72 +16,66 @@ class ChatSession:
         self.aiAssistant = OllamaClient()
         self.datasetmanager = DatasetManager()
 
-    def get_all_datasets(self):
-        all_datasets = self.datasetmanager.get_all_dataset_info()
-        relevant = []
-        for ds in all_datasets:
-            # Chuẩn bị thông tin dataset đầy đủ hơn, thêm danh sách cột
-                relevant.append({
-                    "name": ds.get("name"),
-                    "description": ds.get("description"),
-                    "status": ds.get("status"),
-                    "size": ds.get("size"),
-                    "columns": ds.get("columns")  # Đây là danh sách tên cột
-                })
-        return relevant
-    
-
-    def is_automl_request(self, message: str) -> str:
+    def detect_intent(self, message: str) -> str:
         text = message.lower().strip()
-        greetings = ["hi", "hello", "chào", "xin chào"]
-        if text in greetings:
-            return "Lời chào"
+        
+        create_project_keywords = ["tạo dự án", "khởi tạo dự án", "bắt đầu dự án", "create project", "làm project", "tạo model","tạo mô hình"]
+        greetings = ["Hello","Hi","hi", "hello", "chào", "xin chào", "chào bạn", "chào anh", "chào chị"]
+        update_keywords = ["đổi", "cập nhật", "sửa", "thay đổi", "update", "thêm", "xóa", "tên dự án", "dataset", "mô tả", "project"]
+        question_keywords = ["tại sao", "vì sao", "giải thích", "hướng dẫn", "làm sao", "cách", "ví dụ", "help", "thắc mắc", "câu hỏi"]
+        
+        if not self.project_suggestion:
+                return "create_project"
+        
+        if any(kw in text for kw in create_project_keywords):
+                return "create_project"
+            
+        # Check greeting
+        if any(greet in text for greet in greetings):
+          
+            return "greeting"
+        
+        # Check update intent
+        if any(kw in text for kw in update_keywords):
+        
+            return "update_project"
+        
+        # Check question intent
+        if any(kw in text for kw in question_keywords):
+           
+            return "ask_question"
+        
+        # Mặc định coi là câu hỏi (hoặc bạn có thể trả về "unknown")
+        return "ask_question"
 
-        # Một số câu hỏi phổ biến về giải thích có thể tự xử lý trước
-        if any(kw in text for kw in ["tại sao", "vì sao", "giải thích"]):
-            return "Giải thích"
-
-        # Một số từ khóa gợi ý tạo model
-        if any(kw in text for kw in ["tạo model", "tạo mô hình", "dự án", "project", "gợi ý"]):
-            return "Model"
-
-        # Nếu không trúng, gọi AI để phân loại chính xác hơn
-        prompt = f"""Hãy phân tích câu nói của người dùng và trả lời:
-1. Trả về "Model" nếu người dùng muốn gợi ý tạo model và nếu nó nằm 1 trong 4 loại bài toán (Image Classification, Text Classification, Tabular Classification, Multimodal Classification)
-2. Trả về "Giải thích" nếu người dùng hỏi cần giải thích.
-3. Trả về "Lời chào" nếu người dùng chào hỏi.
-4. Trả về "Khác" nếu không liên quan AutoML.
-
-Chỉ trả lời một trong bốn từ khóa trên, không giải thích gì thêm.
-
-Câu nói: 
-{message}
-"""
-        try:
-            resl = self.aiAssistant.analyze_message(prompt)
-            return resl.strip()
-        except Exception as e:
-            return f"❌ Lỗi khi gọi AI phân loại: {e}"
+    def _build_history_prompt(self, user_message: str) -> str:
+        """
+        Tạo prompt cho AI bao gồm các turn hội thoại gần đây để giữ ngữ cảnh.
+        Giới hạn lấy 3-4 turn gần nhất (user + assistant).
+        """
+        turns = self.history[-8:]  
+        prompt_lines = []
+        for turn in turns:
+            role = turn["role"]
+            content = turn["content"]
+            if role == "user":
+                prompt_lines.append(f"Người dùng: {content}")
+            else:
+                prompt_lines.append(f"Trợ lý: {content}")
+        prompt_lines.append(f"Người dùng: {user_message}")
+        return "\n".join(prompt_lines)
 
     def handle_message(self, message: str) -> str:
-        if self.status == "configuring":
-            return self.project.next_step()
+        self.history.append({"role": "user", "content": message})
 
-        type_ = "Model"
-
-        if type_ == "Model":
-            all_datasets = self.get_all_datasets()
-
-            dataset_info_text = "Hiện tại tôi có một số dataset và mô tả như sau. Tôi nên sử dụng dataset nào hay đi thu thập bên ngo:\n"
-            if all_datasets:
-                for ds in all_datasets:
-                    dataset_info_text += f"- {ds['name']} (Số mẫu: {ds['size']}, Mô tả: {ds['description']})\n"
-            else:
-                dataset_info_text += "Chưa tìm thấy dataset phù hợp trong hệ thống.\n"
-
+        intent = self.detect_intent(message)
+        print (intent)
+        if intent == "greeting":
+            yield "Moew~ Moew~ Chào bạn! Tôi có thể giúp gì cho bạn nào?"
+        
+        elif intent == "create_project":
             prompt = f"""
 Bạn là trợ lý AutoML. Với yêu cầu: "{message}"
-{dataset_info_text}
 Hãy tư vấn chi tiết từng bước giúp người dùng như sau:
 
 1. Xác định nhiệm vụ học máy phù hợp (chọn 1 trong Image Classification, Text Classification, Tabular Classification, Multimodal Classification và giải thích)
@@ -114,9 +108,8 @@ Trả lời theo cấu trúc:
             
             try:
                 in_json_block = False
-                json_lines = []
                 buffet = ""
-
+                
                 for chunk in self.aiAssistant.analyze_message(prompt):
                     buffet += chunk
                     # Bắt đầu JSON block
@@ -124,15 +117,20 @@ Trả lời theo cấu trúc:
                         in_json_block = True
                         print("In JSON")
                         continue
-
+                    
+                    #Nếu vào phần JSON thì
                     if in_json_block:
                         # Nếu phát hiện kết thúc JSON block
                         if "}```" in buffet:
                             print("Out JSON")
                             in_json_block = False
-                
-                    else: yield chunk  # Trả về từng phần text ngay lập tức
-                
+
+                    #Nếu chưa vào phần JSON
+                    else: yield chunk
+
+                # Lưu trợ lý trả lời vào lịch sử
+                self.history.append({"role": "assistant", "content": buffet})
+
                 #Chạy text hướng dẫn xong thì xử lý JSON
                 try:
                     match = re.search(r"```json\s*({.*?})\s*```", buffet, re.DOTALL)
@@ -150,22 +148,79 @@ Trả lời theo cấu trúc:
                         print("❌ Không tìm thấy JSON hợp lệ trong kết quả AI trả về.")
                 except Exception as e:
                     print(f"❌ Lỗi khi parse JSON: {e}")
+
+                yield self.format_summary(self.project_suggestion)
             except Exception as e:
-                print(f"❌ Lỗi khi gọi AI: {e}")
+                    print(f"❌ Lỗi khi gọi AI: {e}")
+
+        elif intent == "update_project":
+            prompt = f"""  
+Bạn là trợ lý AutoML. Người dùng gửi câu:
+
+"{message}"
+
+Hãy phân tích và chỉ trả về một JSON gồm một hoặc nhiều trường muốn cập nhật trong project hiện tại:
+
+- project_name
+
+- project_description
+
+- dataset
+
+- project_type
+
+Nếu không có thay đổi gì, trả về {{}}
+Ví dụ trả về:
+
+{{
+"project_name": "Tên mới",
+"dataset": "dataset ABC"
+}}
+
+Chỉ trả về JSON đúng định dạng, không thêm gì khác.
+"""         
+            update_fields = {}
+            response = self.aiAssistant.analyze_message(prompt)
+            response2 = ''.join(response)
+            print("hihihi")
+            print (response2)
+            try:
+                update_fields = json.loads(response2)
+                
+            except Exception:
+                 print(f"❌ Lỗi khi parse JSON cập nhật: {e}")
+                 update_fields = {}
+            # Cập nhật vào project_suggestion
+            self.project_suggestion.update(update_fields)
+            # Trả về tóm tắt
+            yield self.format_summary(self.project_suggestion)
 
 
-        elif type_ == "Lời chào":
-            yield "Moew~ Moew~ Xin chào!"
+        #Người dùng hỏi sâu về vấn đề
+        elif intent == "ask_question":
+            # Tạo prompt giữ lịch sử hội thoại để AI trả lời sát ngữ cảnh
+            prompt = self._build_history_prompt(message)
+            buffet = ""
 
+            try:
+                for chunk in self.aiAssistant.analyze_message(prompt):
+                    buffet += chunk
+                    yield chunk
 
-        elif type_ == "Giải thích":
-            yield "Moew moew giải thích cho bạn đây!"
+                self.history.append({"role": "assistant", "content": buffet})
+                yield response
 
-        elif type_ == "Khác":
-            yield "Moew moew mình không biết, bạn thử hỏi điều khác nhé!"
+            except Exception as e:
+                return f"❌ Lỗi khi xử lý câu hỏi: {e}"
+    
+    def format_summary(self, suggestion: dict) -> str:
+        summary = "Thông tin dự án hiện tại:\n"
+        for key in ["project_name", "project_description", "dataset", "project_type"]:
+            if key in suggestion:
+                summary += f"- {key.replace('_', ' ').title()}: {suggestion[key]}\n"
+        
+        return summary.strip()
 
-        else:
-            yield "Xin lỗi, tôi chưa hiểu yêu cầu của bạn."
 
     def confirm_create_project(self):
         self.project = AutoMLProject()
