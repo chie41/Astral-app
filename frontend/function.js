@@ -1,0 +1,163 @@
+// Định nghĩa URL API cho backend
+const API_URL = "http://localhost:8000/chat"; // URL API của backend cho chức năng chat
+
+// Hàm bật/tắt dropdown của người dùng trong thanh điều hướng
+// Được gọi bởi: Nhấn vào hồ sơ người dùng (avatar + tên người dùng) trong thanh điều hướng
+function toggleDropdown() {
+  const dropdown = document.getElementById('userDropdown');
+  dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+}
+
+// Hàm gửi tin nhắn trong chat
+// Được gọi bởi: 
+// 1. Nhấn vào nút "Cat Assistant (V1)" (version-label)
+// 2. Nhấn vào nút gửi (send-btn)
+// 3. Nhấn phím Enter trong ô nhập tin nhắn (chatInput)
+async function sendMessage() {
+  const chatInput = document.getElementById('chatInput');
+  const sendBtn = document.getElementById('sendBtn');
+  const chatMessages = document.getElementById('chatMessages');
+  const assistantHeader = document.getElementById('assistantHeader');
+
+  assistantHeader.classList.add('hidden');
+
+  const messageText = chatInput.value.trim();
+  let userMessage = document.createElement('div');
+  userMessage.classList.add('message', 'user');
+  userMessage.innerHTML = `
+    <div class="message-content">${messageText || 'Hi, I want to create a machine learning model to predict future sales based on past transaction data. Can you help me?'}</div>
+  `;
+  chatMessages.appendChild(userMessage);
+
+  const payload = {
+    user_id: "default",
+    message: messageText || "Hi, I want to create a machine learning model to predict future sales based on past transaction data. Can you help me?"
+  };
+
+  try {
+    const response = await fetch(API_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(payload)
+    });
+
+    if (!response.ok) {
+      throw new Error(`API error: ${response.status}`);
+    }
+
+    const data = await response.json();
+    let assistantResponse = data.response;
+
+    if (messageText.toLowerCase() === 'tôi đồng ý') {
+      const confirmPayload = {
+        user_id: "default",
+        message: "tạo project"
+      };
+      const confirmResponse = await fetch(API_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(confirmPayload)
+      });
+      const confirmData = await confirmResponse.json();
+      assistantResponse = confirmData.response;
+    }
+
+    const assistantMessage = document.createElement('div');
+    assistantMessage.classList.add('message', 'assistant');
+    assistantMessage.innerHTML = `
+      <img src="logo.png" alt="Cat Assistant" />
+      <div class="message-content">${assistantResponse}</div>
+    `;
+
+    if (assistantResponse.includes("Nếu bạn đồng ý, hãy nhập 'Tôi đồng ý'")) {
+      const createBtn = document.createElement('div');
+      createBtn.classList.add('create-btn');
+      createBtn.innerText = 'Create';
+      createBtn.onclick = openModal;
+      assistantMessage.querySelector('.message-content').appendChild(createBtn);
+    }
+
+    chatMessages.appendChild(assistantMessage);
+  } catch (error) {
+    const errorMessage = document.createElement('div');
+    errorMessage.classList.add('message', 'assistant');
+    errorMessage.innerHTML = `
+      <img src="logo.png" alt="Cat Assistant" />
+      <div class="message-content">❌ Error: ${error.message}</div>
+    `;
+    chatMessages.appendChild(errorMessage);
+  }
+
+  chatInput.value = '';
+  chatInput.placeholder = 'Moew~ Describe your project!';
+  sendBtn.classList.remove('active');
+  sendBtn.disabled = true;
+
+  chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+
+// Hàm mở modal xác nhận trong boxchat.html
+// Được gọi bởi: Nhấn vào nút "Create" trong tin nhắn của trợ lý
+function openModal() {
+  document.getElementById('confirmModal').style.display = 'flex';
+}
+
+// Hàm đóng modal xác nhận trong boxchat.html
+// Được gọi bởi: Nhấn vào nút "Nah" trong modal xác nhận
+function closeModal() {
+  document.getElementById('confirmModal').style.display = 'none';
+}
+
+// Hàm xác nhận tạo dự án và chuyển hướng
+// Được gọi bởi: Nhấn vào nút "Yeah" trong modal xác nhận
+function confirmProject() {
+  window.location.href = 'manualcreationstep1.html';
+}
+
+// Hàm mở modal tạo dự án mới trong dashboard.html
+// Được gọi bởi: Nhấn vào nút "+ New project" (new-project-btn)
+function openNewProjectModal() {
+  document.getElementById('newProjectModal').style.display = 'flex';
+}
+
+// Hàm đóng modal tạo dự án mới trong dashboard.html
+// Được gọi bởi: Nhấn vào nút "×" (close-btn) trong modal tạo dự án mới
+function closeNewProjectModal() {
+  document.getElementById('newProjectModal').style.display = 'none';
+}
+
+// Thiết lập các sự kiện lắng nghe cho boxchat.html
+// Được gọi khi trang boxchat.html tải xong (onload)
+function setupBoxChatListeners() {
+  const chatInput = document.getElementById('chatInput');
+  const sendBtn = document.getElementById('sendBtn');
+
+  chatInput.addEventListener('input', function() {
+    if (chatInput.value.trim() !== '') {
+      chatInput.placeholder = '';
+      sendBtn.classList.add('active');
+      sendBtn.disabled = false;
+    } else {
+      chatInput.placeholder = 'Moew~ Describe your project!';
+      sendBtn.classList.remove('active');
+      sendBtn.disabled = true;
+    }
+  });
+
+  chatInput.addEventListener('keypress', function(e) {
+    if (e.key === 'Enter' && !e.shiftKey && chatInput.value.trim() !== '') {
+      e.preventDefault();
+      sendMessage();
+    }
+  });
+
+  sendBtn.addEventListener('click', function() {
+    if (!sendBtn.disabled) {
+      sendMessage();
+    }
+  });
+}

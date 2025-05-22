@@ -406,7 +406,7 @@
   <div class="main">
     <div class="header">
       <h1><img src="chartproject.png" alt="Chart Icon" /> Project</h1>
-      <button class="new-project-btn" onclick="openModal()">+ New project</button>
+      <button class="new-project-btn" onclick="openNewProjectModal()">+ New project</button>
     </div>
     <p class="description">Create and manage your AI projects. Choose from various types of machine learning models to solve your specific problems.</p>
 
@@ -441,7 +441,7 @@
 
   <div class="modal" id="newProjectModal">
     <div class="modal-content">
-      <button class="close-btn" onclick="closeModal()">×</button>
+      <button class="close-btn" onclick="closeNewProjectModal()">×</button>
       <h2>How would you like to create your project?</h2>
       <p>Choose the method that works best for you?</p>
       <div class="modal-options">
@@ -459,17 +459,6 @@
     </div>
   </div>
 
-  <script>
-    function openModal() {
-      document.getElementById('newProjectModal').style.display = 'flex';
-    }
-    function closeModal() {
-      document.getElementById('newProjectModal').style.display = 'none';
-    }
-    function toggleDropdown() {
-      const dropdown = document.getElementById('userDropdown');
-      dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
-    }
-  </script>
+  <script src="functions.js"></script>
 </body>
 </html>
