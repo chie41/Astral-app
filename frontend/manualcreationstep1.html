@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ASTRAL - Manual Creation Step 1</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Roboto:wght@200;300;400;500;700&family=Crimson+Text:wght@400&display=swap"
+    rel="stylesheet" />
+  <style>
+    body {
+      font-family: 'Roboto', sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #FFFFFF;
+      overflow-x: hidden;
+    }
+
+    .navbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 20px;
+      border-bottom: 1px solid #DEECFF;
+    }
+
+    .navbar .logo-container {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .navbar img {
+      height: 40px;
+      border-radius: 50%;
+    }
+
+    .logo-text {
+      font-family: 'Crimson Text', serif;
+      font-size: 30px;
+      color: #000000;
+      margin-right: 30px;
+    }
+
+    .navbar .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .navbar a {
+      text-decoration: none;
+      color: #000000;
+      font-size: 16px;
+    }
+
+    .navbar a.active {
+      color: #000000;
+      border-bottom: none;
+    }
+
+    .navbar a:hover {
+      color: #1677FF;
+      text-decoration: underline;
+      text-decoration-color: #1677FF;
+    }
+
+    .user {
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+    }
+
+    .user img {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+    }
+
+    .dropdown {
+      display: none;
+      position: absolute;
+      top: 50px;
+      right: 0;
+      width: 256px;
+      height: 309px;
+      background-color: #FFFFFF;
+      border: 1px solid #DEECFF;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      z-index: 100;
+    }
+
+    .dropdown .profile-section {
+      width: 233px;
+      height: 100px;
+      margin: 10px auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      border-bottom: 1px solid #DEECFF;
+    }
+
+    .dropdown .profile-section img {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+    }
+
+    .dropdown .profile-section .user-info {
+      text-align: center;
+    }
+
+    .dropdown .profile-section .user-info span {
+      display: block;
+    }
+
+    .dropdown .profile-section .user-info .username {
+      font-size: 12px;
+      font-weight: bold;
+    }
+
+    .dropdown .profile-section .user-info .email {
+      font-size: 12px;
+      color: #979797;
+    }
+
+    .dropdown .menu-item {
+      width: 233px;
+      height: 26px;
+      margin: 5px auto;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding-left: 10px;
+      font-size: 12px;
+      color: #000000;
+      border-radius: 5px;
+      cursor: pointer;
+      border: 1px solid rgba(22, 119, 255, 0.7);
+    }
+
+    .dropdown .menu-item:hover {
+      background-color: rgba(201, 234, 255, 0.65);
+    }
+
+    .main {
+      padding: 20px;
+      display: flex;
+      gap: 20px;
+    }
+
+    .header {
+      font-size: 16px;
+      font-weight: 500;
+      margin-bottom: 20px;
+    }
+
+    .left-column {
+      width: 200px;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .step {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+    }
+
+    .step-number {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background-color: #A6A6A6;
+      color: #FFFFFF;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      transition: background-color 0.2s ease;
+    }
+
+    .step-text {
+      font-size: 14px;
+      color: #000000;
+      padding: 5px 10px;
+      transition: background-color 0.2s ease, color 0.2s ease;
+    }
+
+    .step:hover .step-number {
+      background-color: #1677FF;
+    }
+
+    .step:hover .step-text {
+      color: #1677FF;
+      background-color: rgba(22, 119, 255, 0.1);
+    }
+
+    .cancel-link {
+      font-size: 12px;
+      color: #A6A6A6;
+      text-decoration: none;
+      margin-top: 10px;
+    }
+
+    .cancel-link:hover {
+      text-decoration: underline;
+    }
+
+    .middle-column {
+      flex: 2;
+      max-width: 600px;
+    }
+
+    .form-section h2 {
+      font-size: 20px;
+      font-weight: 500;
+      margin-bottom: 20px;
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    .form-group label {
+      font-size: 16px;
+      font-weight: 500;
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    .form-group input,
+    .form-group textarea {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #DEECFF;
+      border-radius: 5px;
+      font-size: 14px;
+      color: #000000;
+      font-family: 'Roboto', sans-serif;
+      box-sizing: border-box;
+    }
+
+    .form-group textarea {
+      height: 100px;
+      resize: none;
+    }
+
+    .form-group input::placeholder,
+    .form-group textarea::placeholder {
+      color: #979797;
+      font-size: 14px;
+    }
+
+    .form-group input:focus,
+    .form-group textarea:focus {
+      outline: none;
+      border-color: #1677FF;
+    }
+
+    .right-column {
+      flex: 1;
+      width: 540px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .project-type {
+      margin-bottom: 10px;
+    }
+
+    .project-type label {
+      font-size: 20px;
+      font-weight: 500;
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    .image-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 260px);
+      gap: 20px;
+    }
+
+    .image-grid img {
+      width: 260px;
+      height: 220px;
+      border-radius: 10px;
+      transition: border-width 0.2s ease;
+      padding: 0px 8px 0px 8px;
+    }
+
+    .image-grid img:hover {
+      border-width: 2px;
+    }
+
+    .next-step-btn {
+      font-size: 12px;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 10px;
+      background-color: #979797;
+      color: #FFFFFF;
+      cursor: not-allowed;
+      transition: background-color 0.2s ease;
+      align-self: flex-end;
+      margin-top: 20px;
+    }
+
+    .next-step-btn.active {
+      background-color: #1677FF;
+      cursor: pointer;
+    }
+
+
+    .image-option {
+      cursor: pointer;
+      border: 0.5px solid;
+      border-radius: 12px;
+      overflow: hidden;
+      transition: border-color 0.3s ease, box-shadow 0.3s ease;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: white;
+    }
+
+    .image-option img {
+      object-fit: cover;
+      display: block;
+      pointer-events: none;
+      /* tránh ảnh chặn click */
+      user-select: none;
+      ;
+    }
+
+    /* Hover: đổi viền và shadow nhẹ */
+    .image-option:hover,
+    .image-option:focus {
+      border-color: #1677ff;
+      box-shadow: 0 0 10px rgba(22, 119, 255, 0.5);
+      outline: none;
+      /* bỏ viền mặc định khi focus */
+    }
+
+    /* Selected state (bạn gán class .selected khi chọn) */
+    .image-option.selected {
+      border-color: #004ecc;
+      box-shadow: 0 0 12px rgba(0, 78, 204, 0.7);
+      background-color: #e6f0ff;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="navbar">
+    <div class="logo-container">
+      <img src="image/logo.png" alt="Logo" />
+      <span class="logo-text">Astral</span>
+      <div class="nav-links">
+        <a href="dashboard.html" class="active">Projects</a>
+        <a href="#">Dataset</a>
+      </div>
+    </div>
+    <div class="user" onclick="toggleDropdown()">
+      <img src="image/avatar.png" alt="Avatar" />
+      <span>Username</span>
+      <div class="dropdown" id="userDropdown">
+        <div class="profile-section">
+          <img src="image/avatar.png" alt="Avatar" />
+          <div class="user-info">
+            <span class="username">Username</span>
+            <span class="email">usernamedeptrainhatng@gmail.com</span>
+          </div>
+        </div>
+        <div class="menu-item"><span style="font-family: 'Roboto', sans-serif;">👤</span> My profile</div>
+        <div class="menu-item"><span style="font-family: 'Roboto', sans-serif;">📁</span> My projects</div>
+        <div class="menu-item"><span style="font-family: 'Roboto', sans-serif;">💻</span> My datasets</div>
+        <div class="menu-item"><span style="font-family: 'Roboto', sans-serif;">⚙</span> Settings</div>
+        <div class="menu-item"><span style="font-family: 'Roboto', sans-serif;">🚪</span> Logout</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="main">
+    <div class="left-column">
+      <div class="header">Create a new project</div>
+      <div class="step">
+        <span class="step-number">1</span>
+        <span class="step-text">Project Details</span>
+      </div>
+      <div class="step">
+        <span class="step-number">2</span>
+        <span class="step-text">Choose Dataset</span>
+      </div>
+      <div class="step">
+        <span class="step-number">3</span>
+        <span class="step-text">Data Configuration</span>
+      </div>
+      <div class="step">
+        <span class="step-number">4</span>
+        <span class="step-text">Automatic Config</span>
+      </div>
+      <a href="boxchat.html" class="cancel-link">Cancel</a>
+    </div>
+
+    <div class="middle-column">
+      <div class="form-section">
+        <h2>Project Details</h2>
+        <div class="form-group">
+          <label for="projectName">Project Name</label>
+          <input type="text" id="projectName" placeholder="Project Name" />
+        </div>
+        <div class="form-group">
+          <label for="description">Description</label>
+          <textarea id="description" placeholder="Description"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <div class="right-column">
+      <div class="project-type">
+        <label for="projectType">Project Type</label>
+      </div>
+      <div class="image-grid">
+        <div class="image-option" data-type="Image Classification">
+          <img src="image/imageclassification.png" alt="Image Classification" />
+        </div>
+        <div class="image-option" data-type="Text Classification">
+          <img src="image/textclassification.png" alt="Text Classification" />
+        </div>
+        <div class="image-option" data-type="Multimodal Classification">
+          <img src="image/multimodalclassification.png" alt="Multimodal Classification" />
+        </div>
+        <div class="image-option" data-type="Tabular Classification">
+          <img src="image/tabularclassification.png" alt="Tabular Classification" />
+        </div>
+      </div>
+      <button id="nextStepBtn" class="next-step-btn" disabled>Next Step</button>
+    </div>
+  </div>
+
+  <script src="function.js"></script>
+  <script>
+    function toggleDropdown() {
+      const dropdown = document.getElementById('userDropdown');
+      dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+    }
+
+    const projectNameInput = document.getElementById('projectName');
+    const descriptionInput = document.getElementById('description');
+    const nextStepBtn = document.getElementById('nextStepBtn');
+
+    function checkForm() {
+      const projectName = projectNameInput.value.trim();
+      const description = descriptionInput.value.trim();
+      if (projectName && description) {
+        nextStepBtn.classList.add('active');
+        nextStepBtn.disabled = false;
+      } else {
+        nextStepBtn.classList.remove('active');
+        nextStepBtn.disabled = true;
+      }
+    }
+
+    projectNameInput.addEventListener('input', checkForm);
+    descriptionInput.addEventListener('input', checkForm);
+
+    nextStepBtn.addEventListener('click', function () {
+      if (!nextStepBtn.disabled) {
+        window.location.href = 'choosedatasetstep2.html';
+      }
+    });
+    const options = document.querySelectorAll('.image-option');
+    let selectedType = null;
+
+    options.forEach(option => {
+      option.addEventListener('click', () => {
+        // Bỏ chọn hết
+        options.forEach(opt => opt.classList.remove('selected'));
+
+        // Chọn cái đang click
+        option.classList.add('selected');
+        selectedType = option.dataset.type;
+      });
+    });
+
+
+    window.addEventListener('DOMContentLoaded', () => {
+      const suggestionStr = localStorage.getItem('project_suggestion');
+      if (!suggestionStr) return;
+
+      const suggestion = JSON.parse(suggestionStr);
+      localStorage.removeItem('project_suggestion');
+
+      const projectNameInput = document.getElementById('projectName');
+      const descriptionInput = document.getElementById('description');
+
+      if (projectNameInput) projectNameInput.value = suggestion.project_name || '';
+      if (descriptionInput) descriptionInput.value = suggestion.project_description || '';
+
+      const projectType = suggestion.project_type;
+      console.log(projectType)
+      options.forEach(opt => opt.classList.remove('selected'));
+
+      const matched = Array.from(options).find(opt =>
+        opt.dataset.type.toLowerCase() === projectType.toLowerCase()
+      );
+      if (matched) {
+        matched.classList.add('selected');
+      }
+
+      checkForm(); // Nếu bạn có hàm checkForm để enable nút
+    });
+  </script>
+
+</body>
+
+</html>

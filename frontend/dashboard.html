@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ASTRAL</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@200;400;700&family=Crimson+Text:wght@400&display=swap" rel="stylesheet" />
+  <style>
+    body {
+      font-family: 'Roboto', sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #FFFFFF;
+    }
+
+    .navbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 20px;
+      border-bottom: 1px solid #DEECFF;
+    }
+
+    .navbar .logo-container {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .navbar img {
+      height: 40px;
+      border-radius: 50%;
+    }
+
+    .logo-text {
+      font-family: 'Crimson Text', serif;
+      font-size: 30px;
+      color: #000000;
+      margin-right: 30px;
+    }
+
+    .navbar .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .navbar a {
+      text-decoration: none;
+      color: #000000;
+      font-size: 16px;
+    }
+
+    .navbar a.active {
+      color: #000000;
+      border-bottom: none;
+    }
+
+    .navbar a:hover {
+      color: #1677FF;
+      text-decoration: underline;
+      text-decoration-color: #1677FF;
+    }
+
+    .user {
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+    }
+
+    .user img {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+    }
+
+    .dropdown {
+      display: none;
+      position: absolute;
+      top: 50px;
+      right: 0;
+      width: 256px;
+      height: 309px;
+      background-color: #FFFFFF;
+      border: 1px solid #DEECFF;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      z-index: 100;
+    }
+
+    .dropdown .profile-section {
+      width: 233px;
+      height: 100px;
+      margin: 10px auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      border-bottom: 1px solid #DEECFF;
+    }
+
+    .dropdown .profile-section img {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+    }
+
+    .dropdown .profile-section .user-info {
+      text-align: center;
+    }
+
+    .dropdown .profile-section .user-info span {
+      display: block;
+    }
+
+    .dropdown .profile-section .user-info .username {
+      font-size: 12px;
+      font-weight: bold;
+    }
+
+    .dropdown .profile-section .user-info .email {
+      font-size: 12px;
+      color: #979797;
+    }
+
+    .dropdown .menu-item {
+      width: 233px;
+      height: 26px;
+      margin: 5px auto;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding-left: 10px;
+      font-size: 12px;
+      color: #000000;
+      border-radius: 5px;
+      cursor: pointer;
+      border: 1px solid rgba(22, 119, 255, 0.7);
+    }
+
+    .dropdown .menu-item:hover {
+      background-color: rgba(201, 234, 255, 0.65);
+    }
+
+    .main {
+      padding: 20px;
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .header h1 {
+      font-size: 30px;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .header h1 img {
+      height: 24px;
+      border-radius: 5;
+    }
+
+    .new-project-btn {
+      background-color: #1677FF;
+      color: #FFFFFF;
+      padding: 10px 20px;
+      border-radius: 20px;
+      border: none;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    .description {
+      color: #979797;
+      margin: 10px 0 20px;
+    }
+
+    .projects {
+      display: flex;
+      gap: 20px;
+    }
+
+    .project-card {
+      background-color: #FFFFFF;
+      border: 1px solid #979797;
+      border-radius: 10px;
+      width: 420px;
+      height: 195px;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    .project-header {
+      background-color: #FFFFFF;
+      padding: 10px 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #979797;
+    }
+
+    .project-header img {
+      width: 40px;
+      height: 40px;
+      border-radius: 5;
+    }
+
+    .delete-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+    }
+
+    .delete-btn img {
+      width: 40px;
+      height: 40px;
+      border-radius: 5;
+    }
+
+    .project-content {
+      background-color: #E7EAEE;
+      padding: 15px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      position: relative;
+      height: 146px;
+    }
+
+    .project-title {
+      font-size: 16px;
+      font-weight: bold;
+      margin: 0 0 5px;
+      text-align: left;
+    }
+
+    .project-description {
+      color: #979797;
+      font-size: 12px;
+      margin: 0 0 5px;
+      text-align: left;
+      word-spacing: 2px;
+    }
+
+    .project-date {
+      color: #979797;
+      font-size: 10px;
+      position: absolute;
+      bottom: 50px;
+      right: 15px;
+    }
+
+    .project-type {
+      background-color: rgba(231, 234, 238, 0.5);
+      color: #1677FF;
+      padding: 5px;
+      border-radius: 10px;
+      font-size: 10px;
+      border: 1px solid #1677FF;
+      position: absolute;
+      bottom: 15px;
+      right: 15px;
+      width: 120px;
+      text-align: center;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      justify-content: center;
+      align-items: center;
+    }
+
+    .modal-content {
+      background-color: #FFFFFF;
+      border-radius: 10px;
+      padding: 20px;
+      width: 600px;
+      position: relative;
+    }
+
+    .close-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: none;
+      border: none;
+      font-size: 24px;
+      color: #E7EAEE;
+      cursor: pointer;
+    }
+
+    .modal-content h2 {
+      font-size: 24px;
+      margin: 0 0 10px;
+      text-align: center;
+    }
+
+    .modal-content p {
+      color: #979797;
+      text-align: center;
+      margin: 0 0 20px;
+      font-size: 12px;
+      font-weight: 200;
+    }
+
+    .modal-options {
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+    }
+
+    .modal-option {
+      background-color: #FFFFFF;
+      border: 1px solid #E7EAEE;
+      border-radius: 10px;
+      padding: 15px;
+      width: 48%;
+      text-align: center;
+      transition: border-width 0.2s ease;
+      border: 1px solid rgba(22, 119, 255, 0.7);
+      cursor: pointer;
+    }
+
+    .modal-option:hover {
+      border-width: 1.5px;
+    }
+
+    .modal-option img {
+      width: 100%;
+      height: auto;
+      margin-bottom: 10px;
+      border-radius: 5px;
+    }
+
+    .modal-option h3 {
+      font-size: 14px;
+      margin: 0 0 5px;
+      text-align: left;
+      font-weight: 400;
+    }
+
+    .modal-option:nth-child(2) h3 {
+      font-size: 14px;
+      font-weight: 400;
+    }
+
+    .modal-option p {
+      color: #979797;
+      font-size: 12px;
+      margin: 0;
+      text-align: left;
+    }
+
+    .modal-option:nth-child(2) p {
+      font-size: 12px;
+      font-weight: 200;
+    }
+  </style>
+</head>
+<body>
+  <div class="navbar">
+    <div class="logo-container">
+      <img src="image/logo.png" alt="Logo" />
+      <span class="logo-text">Astral</span>
+      <div class="nav-links">
+        <a href="dashboard.html" class="active">Projects</a>
+        <a href="datasets.html">Dataset</a>
+      </div>
+    </div>
+    <div class="user" onclick="toggleDropdown()">
+      <img src="image/avatar.png" alt="Avatar" />
+      <span>Username</span>
+      <div class="dropdown" id="userDropdown">
+        <div class="profile-section">
+          <img src="image/avatar.png" alt="Avatar" />
+          <div class="user-info">
+            <span class="username">Username</span>
+            <span class="email">usernamedeptrainhatng@gmail.com</span>
+          </div>
+        </div>
+        <div class="menu-item"><span style="font-family: 'Roboto', sans-serif;">👤</span> My profile</div>
+        <div class="menu-item"><span style="font-family: 'Roboto', sans-serif;">📁</span> My projects</div>
+        <div class="menu-item"><span style="font-family: 'Roboto', sans-serif;">💻</span> My datasets</div>
+        <div class="menu-item"><span style="font-family: 'Roboto', sans-serif;">⚙</span> Settings</div>
+        <div class="menu-item"><span style="font-family: 'Roboto', sans-serif;">🚪</span> Logout</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="main">
+    <div class="header">
+      <h1><img src="image/chartproject.png" alt="Chart Icon" /> Project</h1>
+      <button class="new-project-btn" onclick="openModal()">+ New project</button>
+    </div>
+    <p class="description">Create and manage your AI projects. Choose from various types of machine learning models to solve your specific problems.</p>
+
+    <div class="projects">
+      <div class="project-card">
+        <div class="project-header">
+          <img src="image/element.png" alt="Element Icon" />
+          <button class="delete-btn"><img src="image/delete.png" alt="Delete" /></button>
+        </div>
+        <div class="project-content">
+          <div class="project-title">WILDLIFE IMAGE Classifier</div>
+          <div class="project-description">MEOW MEOW MEOW MEOW</div>
+          <div class="project-date">23/04/2025</div>
+          <div class="project-type">IMAGE_CLASSIFICATION</div>
+        </div>
+      </div>
+
+      <div class="project-card">
+        <div class="project-header">
+          <img src="image/element.png" alt="Element Icon" />
+          <button class="delete-btn"><img src="image/delete.png" alt="Delete" /></button>
+        </div>
+        <div class="project-content">
+          <div class="project-title">CAT IMAGE Classifier</div>
+          <div class="project-description">MEOW MEOW MEOW MEOW</div>
+          <div class="project-date">23/04/2025</div>
+          <div class="project-type">IMAGE_CLASSIFICATION</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal" id="newProjectModal">
+    <div class="modal-content">
+      <button class="close-btn" onclick="closeModal()">×</button>
+      <h2>How would you like to create your project?</h2>
+      <p>Choose the method that works best for you?</p>
+      <div class="modal-options">
+        <div class="modal-option" onclick="window.location.href='boxchat.html'">
+          <img src="image/withassistant.png" alt="With Assistant" />
+          <h3>With our Assistant</h3>
+          <p>Let our Assistant help you step by step</p>
+        </div>
+        <div class="modal-option" onclick="window.location.href='manualcreationstep1.html'">
+          <img src="image/manualcreation.png" alt="Manual Creation" />
+          <h3>Manual Creation</h3>
+          <p>NAH! I’M CAN DO IT BY MYSELF</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="function.js"></script>
+  <script>
+    function openModal() {
+      document.getElementById('newProjectModal').style.display = 'flex';
+    }
+    function closeModal() {
+      document.getElementById('newProjectModal').style.display = 'none';
+    }
+    function toggleDropdown() {
+      const dropdown = document.getElementById('userDropdown');
+      dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+    }
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', function(event) {
+      const dropdown = document.getElementById('userDropdown');
+      const userElement = document.querySelector('.user');
+      if (!userElement.contains(event.target)) {
+        dropdown.style.display = 'none';
+      }
+    });
+  </script>
+</body>
+</html>
