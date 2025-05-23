@@ -485,7 +485,8 @@
       const projectName = projectNameInput.value.trim();
       const description = descriptionInput.value.trim();
       const projectTypeSelected = selectedProjectType !== null;
-
+      if (!projectTypeSelected)
+      console.log("Chưa chọn projectType")
       if (projectName && description && projectTypeSelected) {
         nextStepBtn.classList.add('active');
         nextStepBtn.disabled = false;
@@ -539,13 +540,18 @@
       checkForm();
     });
 
-    // Event listener for project type selection
-    projectTypeImages.forEach(img => {
-      img.addEventListener('click', () => {
-        projectTypeImages.forEach(i => i.classList.remove('selected'));
-        img.classList.add('selected');
-        selectedProjectType = img.getAttribute('data-type');
+     const options = document.querySelectorAll('.image-option');
+
+    options.forEach(option => {
+      option.addEventListener('click', () => {
+        // Bỏ chọn hết
+        options.forEach(opt => opt.classList.remove('selected'));
+
+        // Chọn cái đang click
+        option.classList.add('selected');
+        selectedProjectType = option.dataset.type;
         localStorage.setItem('selectedProjectType', selectedProjectType);
+        saveInputs();
         checkForm();
       });
     });
@@ -565,19 +571,6 @@
       }
     });
 
-    const options = document.querySelectorAll('.image-option');
-    let selectedType = null;
-
-    options.forEach(option => {
-      option.addEventListener('click', () => {
-        // Bỏ chọn hết
-        options.forEach(opt => opt.classList.remove('selected'));
-
-        // Chọn cái đang click
-        option.classList.add('selected');
-        selectedType = option.dataset.type;
-      });
-    });
 
 
     window.addEventListener('DOMContentLoaded', () => {
