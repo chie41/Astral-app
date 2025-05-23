@@ -5,6 +5,8 @@ from pydantic import BaseModel
 from starlette.responses import StreamingResponse
 from fastapi import HTTPException
 from typing import Dict
+from service.models.datasetManager import DatasetManager
+from fastapi.responses import JSONResponse
 
 router = APIRouter()
 
@@ -63,7 +65,7 @@ async def confirm_create_project(req: ConfirmCreateProjectRequest):
     session = sessions[user_id]
 
     suggestion_config = getattr(session, "project_suggestion", None)
-    
+
     if not suggestion_config:
         raise HTTPException(status_code=404, detail="Không có cấu hình đề xuất trong session.")
 
@@ -79,3 +81,13 @@ async def confirm_create_project(req: ConfirmCreateProjectRequest):
         "message": "Đã tạo project với cấu hình từ session, bạn có thể chỉnh sửa.",
         "config": suggestion_config
     }
+
+manager = DatasetManager()
+
+@router.get("/datasets")
+def get_datasets():
+    try:
+        data = manager.get_all_dataset_info()
+        return JSONResponse(content=data)
+    except Exception as e:
+        return JSONResponse(status_code=500, content={"error": str(e)})
