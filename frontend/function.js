@@ -8,6 +8,31 @@ function toggleDropdown() {
   dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
 }
 
+//Xóa mọi thông tin đang tạo dở
+async function clearChatSession() {
+  const payload = { user_id: "default" };
+  const url = "http://localhost:8000/api/clear_session";
+
+  try {
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+
+    if (!response.ok) {
+      const errText = await response.text();
+      console.error(`Lỗi ${response.status}:`, errText);
+      return;
+    }
+
+    const result = await response.json();
+    console.log(result.message);
+  } catch (error) {
+    console.error("Lỗi khi gọi API:", error);
+  }
+}
+
 // Hàm gửi tin nhắn trong chat
 // Được gọi bởi: 
 // 1. Nhấn vào nút "Cat Assistant (V1)" (version-label)
@@ -54,6 +79,7 @@ async function sendMessage() {
     const reader = response.body.getReader();
     const decoder = new TextDecoder();
 
+    console.log("dhsaid")
     let assistantMessage = document.createElement('div');
     assistantMessage.classList.add('message', 'assistant');
     assistantMessage.innerHTML = `<img src="image/logo.png" alt="Cat Assistant" /><div class="message-content"></div>`;
@@ -68,7 +94,18 @@ async function sendMessage() {
       const htmlChunk = chunk.replace(/\n/g, '<br>'); // <-- Sửa tại đây
       messageContentDiv.innerHTML += htmlChunk;
       chatMessages.scrollTop = chatMessages.scrollHeight;
-   
+
+    }
+
+    //Tạo nút bấm dưới text AI 
+    //if (messageContentDiv.innerText.toLowerCase().includes("thông tin dự án")) {
+    if(true){  
+    console.log("Thêm nút tạo dự án")
+      const createBtn = document.createElement("button");
+      createBtn.innerText = "Tạo";
+      createBtn.className = "create-btn"; // gợi ý: bạn có thể định nghĩa CSS cho nút này
+      createBtn.onclick = openModal; // gọi hàm tạo project
+      messageContentDiv.appendChild(createBtn); // thêm nút vào ngay sau tin nhắn của assistant
     }
 
   } catch (error) {
@@ -103,20 +140,51 @@ function closeModal() {
 
 // Hàm xác nhận tạo dự án và chuyển hướng
 // Được gọi bởi: Nhấn vào nút "Yeah" trong modal xác nhận
-function confirmProject() {
-  window.location.href = 'manualcreationstep1.html';
+async function confirmProject() {
+
+  const payload = {
+    user_id: "default",
+  };
+
+
+  try {
+    const response = await fetch("http://localhost:8000/api/confirm_create_project", {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(payload)
+    });
+
+    const result = await response.json();
+    console.log(result.message);
+
+    if (result.status === 'ok') {
+      localStorage.setItem('project_suggestion', JSON.stringify(result.config));
+      window.location.href = 'manualcreationstep1.html';
+    } else {
+      alert("Không thể tạo project.");
+    }
+  } catch (err) {
+    alert("Lỗi khi xác nhận tạo project: " + err.message);
+  }
 }
 
 // Hàm mở modal tạo dự án mới trong dashboard.html
 // Được gọi bởi: Nhấn vào nút "+ New project" (new-project-btn)
-function openNewProjectModal() {
+async function openNewProjectModal() {
+  await clearChatSession()
+
+  localStorage.removeItem('project_suggestion');
   document.getElementById('newProjectModal').style.display = 'flex';
 }
 
 // Hàm đóng modal tạo dự án mới trong dashboard.html
 // Được gọi bởi: Nhấn vào nút "×" (close-btn) trong modal tạo dự án mới
 function closeNewProjectModal() {
+  localStorage.removeItem('project_suggestion');
   document.getElementById('newProjectModal').style.display = 'none';
+
 }
 
 // Thiết lập các sự kiện lắng nghe cho boxchat.html
