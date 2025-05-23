@@ -1,13 +1,6 @@
 // Định nghĩa URL API cho backend
 const API_URL = "http://localhost:8000/api/chat"; // URL API của backend cho chức năng chat
 
-// Hàm bật/tắt dropdown của người dùng trong thanh điều hướng
-// Được gọi bởi: Nhấn vào hồ sơ người dùng (avatar + tên người dùng) trong thanh điều hướng
-function toggleDropdown() {
-  const dropdown = document.getElementById('userDropdown');
-  dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
-}
-
 //Xóa mọi thông tin đang tạo dở
 async function clearChatSession() {
   const payload = { user_id: "default" };
@@ -80,6 +73,7 @@ async function sendMessage() {
 
     const reader = response.body.getReader();
     const decoder = new TextDecoder();
+
     // Add loading dots to AI message
     let assistantMessage = document.createElement('div');
     assistantMessage.classList.add('message', 'assistant');
@@ -108,7 +102,8 @@ async function sendMessage() {
 
     //Tạo nút bấm dưới text AI 
     if (messageContentDiv.innerText.toLowerCase().includes("thông tin dự án")) {
-      console.log("Thêm nút tạo dự án")
+    console.log("Thêm nút tạo dự án")
+
       const createBtn = document.createElement("button");
       createBtn.innerText = "Tạo";
       createBtn.className = "create-btn"; // gợi ý: bạn có thể định nghĩa CSS cho nút này
@@ -131,7 +126,8 @@ async function sendMessage() {
 
 // Hàm mở modal xác nhận trong boxchat.html
 // Được gọi bởi: Nhấn vào nút "Create" trong tin nhắn của trợ lý
-function openModal() {
+async function openModal() {
+  localStorage.removeItem('project_suggestion');
   document.getElementById('confirmModal').style.display = 'flex';
 }
 
@@ -139,6 +135,7 @@ function openModal() {
 // Được gọi bởi: Nhấn vào nút "Nah" trong modal xác nhận
 function closeModal() {
   document.getElementById('confirmModal').style.display = 'none';
+  localStorage.removeItem('project_suggestion');
 }
 
 // Hàm xác nhận tạo dự án và chuyển hướng
@@ -146,7 +143,7 @@ function closeModal() {
 async function confirmProject() {
 
   const payload = {
-    user_id: "default",
+    user_id: "default"
   };
 
 
@@ -171,23 +168,6 @@ async function confirmProject() {
   } catch (err) {
     alert("Lỗi khi xác nhận tạo project: " + err.message);
   }
-}
-
-// Hàm mở modal tạo dự án mới trong dashboard.html
-// Được gọi bởi: Nhấn vào nút "+ New project" (new-project-btn)
-async function openNewProjectModal() {
-  await clearChatSession()
-
-  localStorage.removeItem('project_suggestion');
-  document.getElementById('newProjectModal').style.display = 'flex';
-}
-
-// Hàm đóng modal tạo dự án mới trong dashboard.html
-// Được gọi bởi: Nhấn vào nút "×" (close-btn) trong modal tạo dự án mới
-function closeNewProjectModal() {
-  localStorage.removeItem('project_suggestion');
-  document.getElementById('newProjectModal').style.display = 'none';
-
 }
 
 // Thiết lập các sự kiện lắng nghe cho boxchat.html

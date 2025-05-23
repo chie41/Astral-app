@@ -1,3 +1,4 @@
+#service/models/chatbot
 from models.automlproject import AutoMLProject
 class Chatbot:
     def __init__(self):
@@ -19,12 +20,5 @@ class Chatbot:
 
         session = self.sessions[user_id]
         session["history"].append({"user": message})
-
-        project = session["project"]
-
-        # Ví dụ gọi next_step() để trả lời bước tiếp theo
-        response = project.next_step()
-
-        session["history"].append({"bot": response})
-
-        return response
+    
+        yield session.handle_message

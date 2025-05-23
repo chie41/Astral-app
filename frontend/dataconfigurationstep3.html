@@ -405,7 +405,7 @@
         <span class="step-number">4</span>
         <span class="step-text">Automatic Config</span>
       </div>
-      <a href="boxchat.html" class="cancel-link">Cancel</a>
+      <a href="boxchat.html" class="cancel-link" onclick="clearAllSelections()">Cancel</a>
     </div>
 
     <div class="right-section">
@@ -542,6 +542,14 @@
       const targetSelected = targetSelect.value !== '';
       const imageSelected = imageSelect.value !== '';
 
+      // Save selections to localStorage
+      if (targetSelected) {
+        localStorage.setItem('selectedTargetColumn', targetSelect.value);
+      }
+      if (imageSelected) {
+        localStorage.setItem('selectedImageColumn', imageSelect.value);
+      }
+
       if (targetSelected && imageSelected) {
         nextStepBtn.classList.add('active');
         nextStepBtn.disabled = false;
@@ -551,6 +559,47 @@
         nextStepBtn.disabled = true;
       }
     }
+
+    // Clear all selections across steps
+    function clearAllSelections() {
+      localStorage.removeItem('projectName');
+      localStorage.removeItem('projectDescription');
+      localStorage.removeItem('selectedProjectType');
+      localStorage.removeItem('selectedDatasets');
+      localStorage.removeItem('createdDatasets');
+      localStorage.removeItem('selectedTargetColumn');
+      localStorage.removeItem('selectedImageColumn');
+      localStorage.removeItem('trainingDuration');
+      localStorage.removeItem('expectedAccuracy');
+      localStorage.removeItem('selectedPerformLevel');
+    }
+
+    // Load saved selections when the page loads
+    window.onload = function() {
+      const targetSelect = document.getElementById('targetColumnSelect');
+      const imageSelect = document.getElementById('imageColumnSelect');
+      const savedTarget = localStorage.getItem('selectedTargetColumn');
+      const savedImage = localStorage.getItem('selectedImageColumn');
+
+      // List of valid options for the dropdowns
+      const validOptions = ['Product_Base_ID', 'Report_ID', 'Product_Name', 'url_thumbnail', 'report_name'];
+
+      // Only set the dropdown value if the saved value is valid and non-empty
+      if (savedTarget && validOptions.includes(savedTarget)) {
+        targetSelect.value = savedTarget;
+      } else {
+        targetSelect.value = ''; // Ensure the placeholder is shown
+      }
+
+      if (savedImage && validOptions.includes(savedImage)) {
+        imageSelect.value = savedImage;
+      } else {
+        imageSelect.value = ''; // Ensure the placeholder is shown
+      }
+
+      // Check selections on load to update the Next Step button state
+      checkSelections();
+    };
 
     document.getElementById('targetColumnSelect').addEventListener('change', checkSelections);
     document.getElementById('imageColumnSelect').addEventListener('change', checkSelections);

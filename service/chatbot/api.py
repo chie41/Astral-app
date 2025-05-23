@@ -5,6 +5,8 @@ from pydantic import BaseModel
 from starlette.responses import StreamingResponse
 from fastapi import HTTPException
 from typing import Dict
+from service.models.datasetManager import DatasetManager
+from fastapi.responses import JSONResponse
 
 router = APIRouter()
 
@@ -23,13 +25,11 @@ async def chat(request: ChatRequest):
         sessions[user_id] = ChatSession()
 
     session = sessions[user_id]
+    print(f"[DEBUG] Gọi chat với user_id = {user_id}")
+    print(f"[DEBUG] sessions_chat hiện có: {list(sessions.keys())}")
 
-    if session.status == "suggesting":
-        reply = session.handle_message(message)
-        return StreamingResponse(reply, media_type="text/plain")
-    elif session.status == "configuring":
-        reply = session.project.next_step()
-        return {"response": reply}
+    reply = session.handle_message(message)
+    return StreamingResponse(reply, media_type="text/plain")
 
 class ClearSessionRequest(BaseModel):
     user_id: str
@@ -63,7 +63,7 @@ async def confirm_create_project(req: ConfirmCreateProjectRequest):
     session = sessions[user_id]
 
     suggestion_config = getattr(session, "project_suggestion", None)
-    
+
     if not suggestion_config:
         raise HTTPException(status_code=404, detail="Không có cấu hình đề xuất trong session.")
 
@@ -79,3 +79,13 @@ async def confirm_create_project(req: ConfirmCreateProjectRequest):
         "message": "Đã tạo project với cấu hình từ session, bạn có thể chỉnh sửa.",
         "config": suggestion_config
     }
+
+manager = DatasetManager()
+
+@router.get("/datasets")
+def get_datasets():
+    try:
+        data = manager.get_all_dataset_info()
+        return JSONResponse(content=data)
+    except Exception as e:
+        return JSONResponse(status_code=500, content={"error": str(e)})

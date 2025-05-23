@@ -195,6 +195,10 @@
       transition: background-color 0.2s ease, color 0.2s ease;
     }
 
+    .step.active {
+      background-color: rgba(22, 119, 255, 0.1);
+    }
+
     .step:hover .step-number {
       background-color: #1677FF;
     }
@@ -296,31 +300,12 @@
       height: 220px;
       border-radius: 10px;
       transition: border-width 0.2s ease;
-      padding: 0px 8px 0px 8px;
+       padding: 0px 8px 0px 8px;
     }
 
     .image-grid img:hover {
       border-width: 2px;
     }
-
-    .next-step-btn {
-      font-size: 12px;
-      padding: 10px 20px;
-      border: none;
-      border-radius: 10px;
-      background-color: #979797;
-      color: #FFFFFF;
-      cursor: not-allowed;
-      transition: background-color 0.2s ease;
-      align-self: flex-end;
-      margin-top: 20px;
-    }
-
-    .next-step-btn.active {
-      background-color: #1677FF;
-      cursor: pointer;
-    }
-
 
     .image-option {
       cursor: pointer;
@@ -335,6 +320,8 @@
     }
 
     .image-option img {
+      width: 260px;
+      height: 220px;
       object-fit: cover;
       display: block;
       pointer-events: none;
@@ -357,6 +344,24 @@
       border-color: #004ecc;
       box-shadow: 0 0 12px rgba(0, 78, 204, 0.7);
       background-color: #e6f0ff;
+    }
+    
+    .next-step-btn {
+      font-size: 12px;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 10px;
+      background-color: #979797;
+      color: #FFFFFF;
+      cursor: not-allowed;
+      transition: background-color 0.2s ease;
+      align-self: flex-end;
+      margin-top: 20px;
+    }
+
+    .next-step-btn.active {
+      background-color: #1677FF;
+      cursor: pointer;
     }
   </style>
 </head>
@@ -394,7 +399,7 @@
   <div class="main">
     <div class="left-column">
       <div class="header">Create a new project</div>
-      <div class="step">
+      <div class="step active">
         <span class="step-number">1</span>
         <span class="step-text">Project Details</span>
       </div>
@@ -410,7 +415,7 @@
         <span class="step-number">4</span>
         <span class="step-text">Automatic Config</span>
       </div>
-      <a href="boxchat.html" class="cancel-link">Cancel</a>
+      <a href="boxchat.html" class="cancel-link" onclick="clearAllSelections()">Cancel</a>
     </div>
 
     <div class="middle-column">
@@ -427,7 +432,7 @@
       </div>
     </div>
 
-    <div class="right-column">
+     <div class="right-column">
       <div class="project-type">
         <label for="projectType">Project Type</label>
       </div>
@@ -458,12 +463,31 @@
 
     const projectNameInput = document.getElementById('projectName');
     const descriptionInput = document.getElementById('description');
+    const projectTypeImages = document.querySelectorAll('.image-grid img');
     const nextStepBtn = document.getElementById('nextStepBtn');
+    let selectedProjectType = null;
+
+    // Function to clear all selections across steps
+    function clearAllSelections() {
+      localStorage.removeItem('projectName');
+      localStorage.removeItem('projectDescription');
+      localStorage.removeItem('selectedProjectType');
+      localStorage.removeItem('selectedDatasets');
+      localStorage.removeItem('createdDatasets');
+      localStorage.removeItem('selectedTargetColumn');
+      localStorage.removeItem('selectedImageColumn');
+      localStorage.removeItem('trainingDuration');
+      localStorage.removeItem('expectedAccuracy');
+      localStorage.removeItem('selectedPerformLevel');
+    }
 
     function checkForm() {
       const projectName = projectNameInput.value.trim();
       const description = descriptionInput.value.trim();
-      if (projectName && description) {
+      const projectTypeSelected = selectedProjectType !== null;
+      if (!projectTypeSelected)
+      console.log("Chưa chọn projectType")
+      if (projectName && description && projectTypeSelected) {
         nextStepBtn.classList.add('active');
         nextStepBtn.disabled = false;
       } else {
@@ -472,16 +496,51 @@
       }
     }
 
-    projectNameInput.addEventListener('input', checkForm);
-    descriptionInput.addEventListener('input', checkForm);
-
-    nextStepBtn.addEventListener('click', function () {
-      if (!nextStepBtn.disabled) {
-        window.location.href = 'choosedatasetstep2.html';
+    // Save inputs to localStorage
+    function saveInputs() {
+      localStorage.setItem('projectName', projectNameInput.value.trim());
+      localStorage.setItem('projectDescription', descriptionInput.value.trim());
+      if (selectedProjectType) {
+        localStorage.setItem('selectedProjectType', selectedProjectType);
       }
+    }
+
+    // Load saved inputs from localStorage
+    window.onload = function () {
+      const savedProjectName = localStorage.getItem('projectName');
+      const savedDescription = localStorage.getItem('projectDescription');
+      const savedProjectType = localStorage.getItem('selectedProjectType');
+
+      if (savedProjectName) {
+        projectNameInput.value = savedProjectName;
+      }
+      if (savedDescription) {
+        descriptionInput.value = savedDescription;
+      }
+      if (savedProjectType) {
+        projectTypeImages.forEach(img => {
+          if (img.getAttribute('data-type') === savedProjectType) {
+            img.classList.add('selected');
+            selectedProjectType = savedProjectType;
+          }
+        });
+      }
+
+      checkForm();
+    };
+
+    // Event listeners for inputs
+    projectNameInput.addEventListener('input', () => {
+      saveInputs();
+      checkForm();
     });
-    const options = document.querySelectorAll('.image-option');
-    let selectedType = null;
+
+    descriptionInput.addEventListener('input', () => {
+      saveInputs();
+      checkForm();
+    });
+
+     const options = document.querySelectorAll('.image-option');
 
     options.forEach(option => {
       option.addEventListener('click', () => {
@@ -490,9 +549,28 @@
 
         // Chọn cái đang click
         option.classList.add('selected');
-        selectedType = option.dataset.type;
+        selectedProjectType = option.dataset.type;
+        localStorage.setItem('selectedProjectType', selectedProjectType);
+        saveInputs();
+        checkForm();
       });
     });
+
+    nextStepBtn.addEventListener('click', function () {
+      if (!nextStepBtn.disabled) {
+        window.location.href = 'choosedatasetstep2.html';
+      }
+    });
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', function (event) {
+      const dropdown = document.getElementById('userDropdown');
+      const userElement = document.querySelector('.user');
+      if (!userElement.contains(event.target)) {
+        dropdown.style.display = 'none';
+      }
+    });
+
 
 
     window.addEventListener('DOMContentLoaded', () => {
@@ -509,7 +587,6 @@
       if (descriptionInput) descriptionInput.value = suggestion.project_description || '';
 
       const projectType = suggestion.project_type;
-      console.log(projectType)
       options.forEach(opt => opt.classList.remove('selected'));
 
       const matched = Array.from(options).find(opt =>
@@ -517,12 +594,14 @@
       );
       if (matched) {
         matched.classList.add('selected');
+        selectedProjectType = matched.dataset.type;
+        localStorage.setItem('selectedProjectType', selectedProjectType);
       }
-
+      saveInputs();
       checkForm(); // Nếu bạn có hàm checkForm để enable nút
     });
-  </script>
 
+  </script>
 </body>
 
 </html>
