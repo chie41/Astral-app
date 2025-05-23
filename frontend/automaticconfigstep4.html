@@ -620,6 +620,15 @@
         nextStepBtn.disabled = false;
       });
     });
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', function(event) {
+      const dropdown = document.getElementById('userDropdown');
+      const userElement = document.querySelector('.user');
+      if (!userElement.contains(event.target)) {
+        dropdown.style.display = 'none';
+      }
+    });
   </script>
 </body>
 </html>
