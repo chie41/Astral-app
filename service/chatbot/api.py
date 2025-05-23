@@ -62,14 +62,8 @@ async def confirm_create_project(req: ConfirmCreateProjectRequest):
 
     session = sessions[user_id]
 
-    #suggestion_config = getattr(session, "project_suggestion", None)
-
-    suggestion_config = {
-        "project_name": "Test Project",
-        "project_type": "Image Classification",
-        "project_description": "This is a test project",
-        "dataset": "sample.csv"
-    }
+    suggestion_config = getattr(session, "project_suggestion", None)
+    
     if not suggestion_config:
         raise HTTPException(status_code=404, detail="Không có cấu hình đề xuất trong session.")
 
