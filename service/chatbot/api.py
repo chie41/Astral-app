@@ -25,13 +25,11 @@ async def chat(request: ChatRequest):
         sessions[user_id] = ChatSession()
 
     session = sessions[user_id]
+    print(f"[DEBUG] Gọi chat với user_id = {user_id}")
+    print(f"[DEBUG] sessions_chat hiện có: {list(sessions.keys())}")
 
-    if session.status == "suggesting":
-        reply = session.handle_message(message)
-        return StreamingResponse(reply, media_type="text/plain")
-    elif session.status == "configuring":
-        reply = session.project.next_step()
-        return {"response": reply}
+    reply = session.handle_message(message)
+    return StreamingResponse(reply, media_type="text/plain")
 
 class ClearSessionRequest(BaseModel):
     user_id: str

@@ -1,9 +1,9 @@
+#service/chatbot/session
 from service.models.automlproject import AutoMLProject
 from typing import Dict
 import json
 import re
 from service.chatbot.ollama_client import OllamaClient
-from service.chatbot.huggingface import HuggingFaceClient
 from service.models.datasetManager import DatasetManager
 
 class ChatSession:
@@ -76,11 +76,13 @@ class ChatSession:
         
         elif intent == "create_project":
             prompt = f"""
+Chỉ trả lời bằng tiếng việt, chỉ có 1 JSON luôn ở cuối cùng, trả lời ngắn gọn ít hơn 100 từ.
 Bạn là trợ lý AutoML. Với yêu cầu: "{message}"
 Hãy tư vấn chi tiết từng bước giúp người dùng như sau:
 
-1. Xác định nhiệm vụ học máy phù hợp (chọn 1 trong Image Classification, Text Classification, Tabular Classification, Multimodal Classification và giải thích)
-2. Hướng dẫn xây dựng hoặc thu thập tập dữ liệu (cách lấy dữ liệu, đặc trưng cần chú ý, kích thước mẫu) và Dataset gợi ý (nếu có) có thể dùng được (có thể tìm trong database hệ thống) 
+1. Xác định nhiệm vụ học máy phù hợp: (chọn 1 trong Image Classification, Text Classification, Tabular Classification, Multimodal Classification và giải thích)
+2. Database phù hợp trong hệ thống: Không có thì đừng trả lời mục này
+2. Cách thu thập dữ liệu :Hướng dẫn xây dựng hoặc thu thập tập dữ liệu (cách lấy dữ liệu, đặc trưng cần chú ý, kích thước mẫu)
 3. Cách gán nhãn cho tập dữ liệu (có ví dụ cụ thể)
 4. Cách đánh giá mô hình gồm các chỉ số: 
 - độ chính xác (Accuracy), 
@@ -94,7 +96,15 @@ Sau đó, ở cuối hãy gợi ý dự án dưới dạng JSON gồm các trư�
 - dataset (tìm trong database gợi ý cho người dùng)
 
 Trả lời theo cấu trúc:
-- Phần tư vấn chi tiết (văn bản) 
+- Phần tư vấn chi tiết (văn bản) theo cấu trúc mục đề:
+1. Xác định nhiệm vụ học máy phù hợp:
+2. Database phù hợp trong hệ thống: Không có thì đừng trả lời mục này
+3. Cách gán nhãn cho tập dữ liệu (có ví dụ cụ thể)
+4. 4. Cách đánh giá mô hình gồm các chỉ số: 
+- độ chính xác (Accuracy) (nên chọn chỉ số bao nhiêu)
+- Độ chính xác (Precision) 
+- Độ nhảy cảm (Recall) 
+
 - Phần JSON (mã code block) viết sau cùng và phần trả lời dưới dạng **JSON duy nhất** như sau không cần thêm gì như "Phần JSON" vào trước cấu trúc cả:
 
 ```json
@@ -104,7 +114,6 @@ Trả lời theo cấu trúc:
   "project_description": "...",
   "dataset": "..."
 }}
-
 """
             
             try:
@@ -184,7 +193,6 @@ Chỉ trả về JSON đúng định dạng, không thêm gì khác.
             update_fields = {}
             response = self.aiAssistant.analyze_message(prompt)
             response2 = ''.join(response)
-            print("hihihi")
             print (response2)
             try:
                 update_fields = json.loads(response2)
