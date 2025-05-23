@@ -22,13 +22,14 @@ class ChatSession:
         create_project_keywords = ["tạo dự án", "khởi tạo dự án", "bắt đầu dự án", "create project", "làm project", "tạo model","tạo mô hình"]
         greetings = ["Hello","Hi","hi", "hello", "chào", "xin chào", "chào bạn", "chào anh", "chào chị"]
         update_keywords = ["đổi", "cập nhật", "sửa", "thay đổi", "update", "thêm", "xóa", "tên dự án", "dataset", "mô tả", "project"]
-        question_keywords = ["tại sao", "vì sao", "giải thích", "hướng dẫn", "làm sao", "cách", "ví dụ", "help", "thắc mắc", "câu hỏi"]
+        question_keywords = ["tại sao", "vì sao", "giải thích", "hướng dẫn", "làm sao", "cách", "ví dụ", "help", "thắc mắc", "câu hỏi","không hiểu lắm"]
         
             
-        # Check greeting
-        if any(greet in text for greet in greetings):
-          
-            return "greeting"
+        # Kiểm tra greeting theo từ nguyên vẹn
+        for greet in greetings:
+            pattern = r'\b' + re.escape(greet) + r'\b'  # ví dụ \bhi\b
+            if re.search(pattern, text):
+                return "greeting"
         
         
         if any(kw in text for kw in create_project_keywords):
@@ -43,8 +44,7 @@ class ChatSession:
         
         # Check question intent
         if any(kw in text for kw in question_keywords):
-           
-            return "ask_question"
+           return "ask_question"
         
         # Mặc định coi là câu hỏi (hoặc bạn có thể trả về "unknown")
         return "ask_question"
@@ -155,6 +155,7 @@ Trả lời theo cấu trúc:
                     print(f"❌ Lỗi khi gọi AI: {e}")
 
         elif intent == "update_project":
+
             prompt = f"""  
 Bạn là trợ lý AutoML. Người dùng gửi câu:
 
@@ -179,7 +180,7 @@ Ví dụ trả về:
 }}
 
 Chỉ trả về JSON đúng định dạng, không thêm gì khác.
-"""         
+"""     
             update_fields = {}
             response = self.aiAssistant.analyze_message(prompt)
             response2 = ''.join(response)
@@ -201,7 +202,7 @@ Chỉ trả về JSON đúng định dạng, không thêm gì khác.
         elif intent == "ask_question":
             # Tạo prompt giữ lịch sử hội thoại để AI trả lời sát ngữ cảnh
             prompt = self._build_history_prompt(message)
-            prompt += "\n\nTrả lời ngắn gọn, tối đa 3-4 câu, không trả về JSON hay mã code."
+            prompt += "\n\n Nếu người dùng không hỏi về AutoML thì bảo là: Meo~ Meo~ bạn chỉ nên hỏi về vấn đề liên quan đến AutoML thôi nhé (chỉ trả lời như thế ko thêm gì vào) còn nếu liên quan đến AutoML thì trả lời ngắn gọn, tối đa 3-4 câu, không trả về JSON hay mã code. "
             
             buffet = ""
 
