@@ -3,7 +3,7 @@ class AutoMLProject:
         self.project_name = None
         self.project_description = None
         self.project_type = None
-        self.dataset_info = None
+        self.dataset = None
         self.first_column = None       # vd: image column
         self.second_column = None      # vd: target column
         self.accuracy = None
@@ -21,7 +21,7 @@ class AutoMLProject:
         self.project_type = project_type
 
     def update_dataset_info(self, dataset_info):
-        self.dataset_info = dataset_info
+        self.dataset = dataset_info
 
     def update_columns(self, first_col=None, second_col=None):
         if first_col is not None:
@@ -49,8 +49,8 @@ class AutoMLProject:
     def get_project_type(self):
         return self.project_type
 
-    def get_dataset_info(self):
-        return self.dataset_info
+    def get_dataset(self):
+        return self.dataset
 
     def get_columns(self):
         return self.first_column, self.second_column
@@ -76,7 +76,7 @@ class AutoMLProject:
             return "Ok"
 
         elif step_count == 1:  # Step 2
-            if not self.dataset_info:
+            if not self.dataset:
                 return "Vui lòng chọn dataset huấn luyện"
             return "Ok"
 

@@ -1,45 +1,25 @@
-from service.models.automlproject import AutoMLProject
 from service.chatbot.session import ChatSession
 
-def run_chat():
-    session = ChatSession()
+def test_update():
+    chat = ChatSession()
 
-    # In thông tin dataset hiện có lúc bắt đầu
-    all_datasets = session.get_all_datasets()
-    dataset_info_text = "Hiện tại tôi có một số dataset phù hợp:\n"
-    if all_datasets:
-        for ds in all_datasets:
-            dataset_info_text += f"- {ds['name']} (Số mẫu: {ds['size']}, Mô tả: {ds['description']})\n"
-    else:
-        dataset_info_text += "Chưa tìm thấy dataset phù hợp trong hệ thống.\n"
+    # Giả lập có gợi ý project sẵn (để tránh nó hiểu là create_project)
+    chat.project_suggestion = {
+        "project_name": "Dự án cũ",
+        "project_type": "Image Classification",
+        "project_description": "Mô tả ban đầu",
+        "dataset": "DatasetA"
+    }
 
-    print(dataset_info_text)
-    print(f"Tổng số dataset: {len(all_datasets)}\n")
+    user_message = "Đổi tên dự án thành Dự án Mới và dùng dataset DatasetB"
 
-    print("💬 AI: Xin chào! Bạn muốn tạo model gì hoặc cần tôi giải thích điều gì?")
-
-    while True:
-        user_input = input("🧑 Bạn: ").strip()
-
-        if user_input.lower() in ["thoát", "exit", "quit"]:
-            print("💬 AI: Tạm biệt!")
-            break
-
-        if session.status == "configuring":
-            # Nếu đang ở trạng thái cấu hình, gọi next_step()
-            response = session.project.next_step()
-            print("💬 AI:", response)
-            continue
-
-        # Ở trạng thái đề xuất, gọi handle_message xử lý input
-        response = session.handle_message(user_input)
-        print("💬 AI:", response)
-
-        # Nếu user đồng ý tạo project (ví dụ nhập "tôi đồng ý")
-        if "tôi đồng ý" in user_input.lower() and session.status == "suggesting" and session.project_suggestion:
-            confirm_resp = session.confirm_create_project()
-            print("💬 AI:", confirm_resp)
-
+    print("===== Phản hồi từ handle_message =====")
+    for response in chat.handle_message(user_message):
+        if isinstance(response, str):
+            print(response)
+        elif hasattr(response, "__iter__"):  # nếu là generator
+            for r in response:
+                print(r)
 
 if __name__ == "__main__":
-    run_chat()
+    test_update()
