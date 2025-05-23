@@ -1,6 +1,31 @@
 // Định nghĩa URL API cho backend
 const API_URL = "http://localhost:8000/api/chat"; // URL API của backend cho chức năng chat
 
+//Xóa mọi thông tin đang tạo dở
+async function clearChatSession() {
+  const payload = { user_id: "default" };
+  const url = "http://localhost:8000/api/clear_session";
+
+  try {
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+
+    if (!response.ok) {
+      const errText = await response.text();
+      console.error(`Lỗi ${response.status}:`, errText);
+      return;
+    }
+
+    const result = await response.json();
+    console.log(result.message);
+  } catch (error) {
+    console.error("Lỗi khi gọi API:", error);
+  }
+}
+
 // Hàm gửi tin nhắn trong chat
 // Được gọi bởi: 
 // 1. Nhấn vào nút "Cat Assistant (V1)" (version-label)
@@ -77,7 +102,7 @@ async function sendMessage() {
 
     //Tạo nút bấm dưới text AI 
     if (messageContentDiv.innerText.toLowerCase().includes("thông tin dự án")) {
-      console.log("Thêm nút tạo dự án")
+    console.log("Thêm nút tạo dự án")
 
       const createBtn = document.createElement("button");
       createBtn.innerText = "Tạo";
@@ -101,7 +126,8 @@ async function sendMessage() {
 
 // Hàm mở modal xác nhận trong boxchat.html
 // Được gọi bởi: Nhấn vào nút "Create" trong tin nhắn của trợ lý
-function openModal() {
+async function openModal() {
+  localStorage.removeItem('project_suggestion');
   document.getElementById('confirmModal').style.display = 'flex';
 }
 
@@ -109,12 +135,39 @@ function openModal() {
 // Được gọi bởi: Nhấn vào nút "Nah" trong modal xác nhận
 function closeModal() {
   document.getElementById('confirmModal').style.display = 'none';
+  localStorage.removeItem('project_suggestion');
 }
 
 // Hàm xác nhận tạo dự án và chuyển hướng
 // Được gọi bởi: Nhấn vào nút "Yeah" trong modal xác nhận
-function confirmProject() {
-  window.location.href = 'manualcreationstep1.html';
+async function confirmProject() {
+
+  const payload = {
+    user_id: "default"
+  };
+
+
+  try {
+    const response = await fetch("http://localhost:8000/api/confirm_create_project", {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(payload)
+    });
+
+    const result = await response.json();
+    console.log(result.message);
+
+    if (result.status === 'ok') {
+      localStorage.setItem('project_suggestion', JSON.stringify(result.config));
+      window.location.href = 'manualcreationstep1.html';
+    } else {
+      alert("Không thể tạo project.");
+    }
+  } catch (err) {
+    alert("Lỗi khi xác nhận tạo project: " + err.message);
+  }
 }
 
 // Thiết lập các sự kiện lắng nghe cho boxchat.html
