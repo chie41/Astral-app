@@ -24,21 +24,22 @@ class ChatSession:
         update_keywords = ["đổi", "cập nhật", "sửa", "thay đổi", "update", "thêm", "xóa", "tên dự án", "dataset", "mô tả", "project"]
         question_keywords = ["tại sao", "vì sao", "giải thích", "hướng dẫn", "làm sao", "cách", "ví dụ", "help", "thắc mắc", "câu hỏi"]
         
-        if not self.project_suggestion:
-                return "create_project"
-        
-        if any(kw in text for kw in create_project_keywords):
-                return "create_project"
             
         # Check greeting
         if any(greet in text for greet in greetings):
           
             return "greeting"
         
+        
+        if any(kw in text for kw in create_project_keywords):
+                return "create_project"
+        
         # Check update intent
         if any(kw in text for kw in update_keywords):
-        
-            return "update_project"
+            if not self.project_suggestion:
+                return "create_project"
+            else:
+                return "update_project"
         
         # Check question intent
         if any(kw in text for kw in question_keywords):
@@ -200,6 +201,8 @@ Chỉ trả về JSON đúng định dạng, không thêm gì khác.
         elif intent == "ask_question":
             # Tạo prompt giữ lịch sử hội thoại để AI trả lời sát ngữ cảnh
             prompt = self._build_history_prompt(message)
+            prompt += "\n\nTrả lời ngắn gọn, tối đa 3-4 câu, không trả về JSON hay mã code."
+            
             buffet = ""
 
             try:
@@ -223,7 +226,12 @@ Chỉ trả về JSON đúng định dạng, không thêm gì khác.
 
 
     def confirm_create_project(self):
+        if not self.project_suggestion:
+            return "❌ Chưa có cấu hình dự án đề xuất."
+    
         self.project = AutoMLProject()
-        self.project.update_project_type(self.project_suggestion.get("project_type"))
-        self.status = "configuring"
+        # Giả sử AutoMLProject có các thuộc tính tương ứng bạn có thể gán trực tiếp:
+        for key, value in self.project_suggestion.items():
+            if hasattr(self.project, key):
+                setattr(self.project, key, value)
         return "✅ Đã tạo project. Bạn có thể tiếp tục cấu hình thêm."
