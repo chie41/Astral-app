@@ -11,6 +11,7 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],  # hoặc ["http://localhost:5500"] nếu frontend chạy local
     allow_methods=["*"],
+    allow_credentials=True,
     allow_headers=["*"],
 )
 
