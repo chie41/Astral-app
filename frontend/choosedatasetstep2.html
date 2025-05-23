@@ -618,7 +618,7 @@
         <span class="step-number">1</span>
         <span class="step-text">Project Details</span>
       </div>
-      <div class="step">
+      <div class="step active">
         <span class="step-number">2</span>
         <span class="step-text">Choose Dataset</span>
       </div>
@@ -630,7 +630,7 @@
         <span class="step-number">4</span>
         <span class="step-text">Automatic Config</span>
       </div>
-      <a href="boxchat.html" class="cancel-link">Cancel</a>
+      <a href="boxchat.html" class="cancel-link" onclick="clearAllSelections()">Cancel</a>
     </div>
 
     <div class="right-section">
@@ -655,61 +655,61 @@
           </thead>
           <tbody id="datasetTableBody">
             <tr>
-              <td><input type="checkbox" id="datasetCheckbox1" /></td>
+              <td><input type="checkbox" id="datasetCheckbox1" data-index="1" /></td>
               <td>Mỹ phẩm Shopee</td>
               <td class="description">Data các ảnh, tên sản phẩm mỹ phẩm trên Shopee</td>
               <td class="labeled">Labeled</td>
             </tr>
             <tr>
-              <td><input type="checkbox" id="datasetCheckbox2" /></td>
+              <td><input type="checkbox" id="datasetCheckbox2" data-index="2" /></td>
               <td>Mỹ phẩm Shopee</td>
               <td class="description">Data các ảnh, tên sản phẩm mỹ phẩm trên Shopee</td>
               <td class="labeled">Labeled</td>
             </tr>
             <tr>
-              <td><input type="checkbox" id="datasetCheckbox3" /></td>
+              <td><input type="checkbox" id="datasetCheckbox3" data-index="3" /></td>
               <td>Mỹ phẩm Shopee</td>
               <td class="description">Data các ảnh, tên sản phẩm mỹ phẩm trên Shopee</td>
               <td class="labeled">Labeled</td>
             </tr>
             <tr>
-              <td><input type="checkbox" id="datasetCheckbox4" /></td>
+              <td><input type="checkbox" id="datasetCheckbox4" data-index="4" /></td>
               <td>Mỹ phẩm Shopee</td>
               <td class="description">Data các ảnh, tên sản phẩm mỹ phẩm trên Shopee</td>
               <td class="labeled">Labeled</td>
             </tr>
             <tr>
-              <td><input type="checkbox" id="datasetCheckbox5" /></td>
+              <td><input type="checkbox" id="datasetCheckbox5" data-index="5" /></td>
               <td>Mỹ phẩm Shopee</td>
               <td class="description">Data các ảnh, tên sản phẩm mỹ phẩm trên Shopee</td>
               <td class="labeled">Labeled</td>
             </tr>
             <tr>
-              <td><input type="checkbox" id="datasetCheckbox6" /></td>
+              <td><input type="checkbox" id="datasetCheckbox6" data-index="6" /></td>
               <td>Mỹ phẩm Shopee</td>
               <td class="description">Data các ảnh, tên sản phẩm mỹ phẩm trên Shopee</td>
               <td class="labeled">Labeled</td>
             </tr>
             <tr>
-              <td><input type="checkbox" id="datasetCheckbox7" /></td>
+              <td><input type="checkbox" id="datasetCheckbox7" data-index="7" /></td>
               <td>Mỹ phẩm Shopee</td>
               <td class="description">Data các ảnh, tên sản phẩm mỹ phẩm trên Shopee</td>
               <td class="labeled">Labeled</td>
             </tr>
             <tr>
-              <td><input type="checkbox" id="datasetCheckbox8" /></td>
+              <td><input type="checkbox" id="datasetCheckbox8" data-index="8" /></td>
               <td>Mỹ phẩm Shopee</td>
               <td class="description">Data các ảnh, tên sản phẩm mỹ phẩm trên Shopee</td>
               <td class="labeled">Labeled</td>
             </tr>
             <tr>
-              <td><input type="checkbox" id="datasetCheckbox9" /></td>
+              <td><input type="checkbox" id="datasetCheckbox9" data-index="9" /></td>
               <td>Mỹ phẩm Shopee</td>
               <td class="description">Data các ảnh, tên sản phẩm mỹ phẩm trên Shopee</td>
               <td class="labeled">Labeled</td>
             </tr>
             <tr>
-              <td><input type="checkbox" id="datasetCheckbox10" /></td>
+              <td><input type="checkbox" id="datasetCheckbox10" data-index="10" /></td>
               <td>Mỹ phẩm Shopee</td>
               <td class="description">Data các ảnh, tên sản phẩm mỹ phẩm trên Shopee</td>
               <td class="labeled">Labeled</td>
@@ -786,7 +786,7 @@
 
   <script src="functions.js"></script>
   <script>
-    const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+    const checkboxes = document.querySelectorAll('input[type="checkbox"][data-index]');
     const nextStepBtn = document.getElementById('nextStepBtn');
     const datasetTitleInput = document.getElementById('datasetTitle');
     const datasetTypeInput = document.getElementById('datasetType');
@@ -848,40 +848,119 @@
       createDatasetBtn.disabled = true;
     }
 
+    // Function to clear all selections across steps
+    function clearAllSelections() {
+      localStorage.removeItem('projectName');
+      localStorage.removeItem('projectDescription');
+      localStorage.removeItem('selectedProjectType');
+      localStorage.removeItem('selectedDatasets');
+      localStorage.removeItem('createdDatasets');
+      localStorage.removeItem('selectedTargetColumn');
+      localStorage.removeItem('selectedImageColumn');
+      localStorage.removeItem('trainingDuration');
+      localStorage.removeItem('expectedAccuracy');
+      localStorage.removeItem('selectedPerformLevel');
+    }
+
+    // Save checkbox states to localStorage
+    function saveCheckboxStates() {
+      const selectedIndices = Array.from(checkboxes)
+        .filter(cb => cb.checked)
+        .map(cb => cb.getAttribute('data-index'));
+      localStorage.setItem('selectedDatasets', JSON.stringify(selectedIndices));
+    }
+
+    // Load checkbox states from localStorage
+    window.onload = function() {
+      const savedIndices = JSON.parse(localStorage.getItem('selectedDatasets')) || [];
+      const savedCreatedDatasets = JSON.parse(localStorage.getItem('createdDatasets')) || [];
+
+      // Restore created datasets
+      savedCreatedDatasets.forEach(dataset => {
+        const newRow = document.createElement('tr');
+        newRow.innerHTML = `
+          <td><input type="checkbox" data-index="${dataset.index}" ${dataset.checked ? 'checked' : ''} /></td>
+          <td>${dataset.title}</td>
+          <td class="description">${dataset.type}</td>
+          <td class="labeled">${dataset.labeled}</td>
+        `;
+        datasetTableBody.insertBefore(newRow, datasetTableBody.firstChild);
+      });
+
+      // Reattach event listeners to new checkboxes and update the checkbox list
+      const allCheckboxes = document.querySelectorAll('input[type="checkbox"][data-index]');
+      allCheckboxes.forEach(cb => {
+        cb.addEventListener('change', function() {
+          updateNextButtonState();
+          saveCheckboxStates();
+        });
+      });
+
+      // Restore checkbox states for both original and created datasets
+      allCheckboxes.forEach(cb => {
+        const index = cb.getAttribute('data-index');
+        if (savedIndices.includes(index)) {
+          cb.checked = true;
+        }
+      });
+
+      updateNextButtonState();
+    };
+
+    // Update the Next Step button state
+    function updateNextButtonState() {
+      const anyChecked = Array.from(document.querySelectorAll('input[type="checkbox"][data-index]')).some(cb => cb.checked);
+      if (anyChecked) {
+        nextStepBtn.classList.add('active');
+        nextStepBtn.disabled = false;
+      } else {
+        nextStepBtn.classList.remove('active');
+        nextStepBtn.disabled = true;
+      }
+    }
+
     createDatasetBtn.addEventListener('click', function() {
       if (!createDatasetBtn.disabled) {
         const title = datasetTitleInput.value.trim();
         const type = datasetTypeInput.value.trim();
         const labeledValue = Array.from(labeledRadios).find(radio => radio.checked).value;
 
+        // Generate a unique index for the new dataset
+        const existingIndices = Array.from(document.querySelectorAll('input[type="checkbox"][data-index]'))
+          .map(cb => parseInt(cb.getAttribute('data-index')));
+        const newIndex = existingIndices.length > 0 ? Math.max(...existingIndices) + 1 : 1;
+
         const newRow = document.createElement('tr');
         newRow.innerHTML = `
-          <td><input type="checkbox" checked /></td>
+          <td><input type="checkbox" data-index="${newIndex}" checked /></td>
           <td>${title}</td>
           <td class="description">${type}</td>
           <td class="labeled">${labeledValue}</td>
         `;
         datasetTableBody.insertBefore(newRow, datasetTableBody.firstChild);
-        closePopup();
 
-        const anyChecked = Array.from(document.querySelectorAll('input[type="checkbox"]')).some(cb => cb.checked);
-        if (anyChecked) {
-          nextStepBtn.classList.add('active');
-          nextStepBtn.disabled = false;
-        }
+        // Save the created dataset to localStorage
+        const createdDatasets = JSON.parse(localStorage.getItem('createdDatasets')) || [];
+        createdDatasets.push({ index: newIndex.toString(), title, type, labeled: labeledValue, checked: true });
+        localStorage.setItem('createdDatasets', JSON.stringify(createdDatasets));
+
+        closePopup();
+        updateNextButtonState();
+        saveCheckboxStates();
+
+        // Reattach event listeners to new checkboxes
+        const newCheckbox = newRow.querySelector('input[type="checkbox"]');
+        newCheckbox.addEventListener('change', function() {
+          updateNextButtonState();
+          saveCheckboxStates();
+        });
       }
     });
 
     checkboxes.forEach(checkbox => {
       checkbox.addEventListener('change', function() {
-        const anyChecked = Array.from(document.querySelectorAll('input[type="checkbox"]')).some(cb => cb.checked);
-        if (anyChecked) {
-          nextStepBtn.classList.add('active');
-          nextStepBtn.disabled = false;
-        } else {
-          nextStepBtn.classList.remove('active');
-          nextStepBtn.disabled = true;
-        }
+        updateNextButtonState();
+        saveCheckboxStates();
       });
     });
 
