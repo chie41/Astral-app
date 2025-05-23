@@ -1,3 +1,4 @@
+#service/models/automlproject
 class AutoMLProject:
     def __init__(self):
         self.project_name = None
