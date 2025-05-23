@@ -1,3 +1,4 @@
+#service/models/user
 from models.automlproject import AutoMLProject
 class User:
     def __init__(self, user_id):
