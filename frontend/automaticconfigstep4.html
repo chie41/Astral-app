@@ -208,6 +208,10 @@
       white-space: nowrap;
     }
 
+    .step.active {
+      background-color: rgba(22, 119, 255, 0.1);
+    }
+
     .step:hover .step-number {
       background-color: #1677FF;
     }
@@ -240,7 +244,7 @@
       padding: 15px 0;
       display: flex;
       justify-content: space-between;
-      gap: 20px;
+      gap: 10px;
     }
 
     .config-title {
@@ -256,7 +260,7 @@
       flex-direction: column;
       gap: 15px;
       margin-bottom: 15px;
-      width: 40%;
+      width: 50%;
     }
 
     .input-label {
@@ -267,7 +271,7 @@
     }
 
     .input-field {
-      width: 380%;
+      width: 100%;
       padding: 8px;
       border: 1px solid rgba(0, 0, 0, 0.5);
       border-radius: 5px;
@@ -289,37 +293,38 @@
       display: flex;
       flex-direction: column;
       gap: 10px;
-      width: 400%;
+      width: 100%;
     }
 
     .perform-level-item {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 8px;
-      border: 1px solid rgba(0, 0, 0, 0.5);
-      border-radius: 5px;
+      border: 1px solid rgba(0, 0, 0, 0.25);
+      border-radius: 10px;
       cursor: pointer;
-      font-size: 14px;
-      color: #000000;
-      font-family: 'Roboto', sans-serif;
+      padding: 10px;
+      transition: border-color 0.2s ease, background-color 0.2s ease;
+      display: inline-block;
     }
 
     .perform-level-item img {
-      width: 16px;
-      height: 16px;
+      width: 100%;
+      height: auto;
     }
 
     .perform-level-item:hover {
       border-color: #1677FF;
-      background-color: rgba(22, 119, 255, 0.1);
+      background-color: #DEECFF;
+    }
+
+    .perform-level-item.selected {
+      border-color: #1677FF;
+      background-color: #DEECFF;
     }
 
     .tables-container {
       display: flex;
       flex-direction: column;
       gap: 15px;
-      width: 50%;
+      width: 80%;
     }
 
     .instance-config,
@@ -349,24 +354,27 @@
 
     .instance-item {
       font-size: 14px;
-      font-weight: 300;
+      font-weight: 500;
       color: #000000;
       margin: 5px 0;
       white-space: nowrap;
+      font-family: 'Roboto', sans-serif;
     }
 
     .cost-item {
       font-size: 14px;
-      font-weight: 300;
+      font-weight: 500;
       color: #000000;
       margin: 5px 0;
       display: flex;
-      justify-content: space-between;
+      justify-content: flex-end;
       white-space: nowrap;
+      font-family: 'Roboto', sans-serif;
     }
 
     .cost-item span.value {
-      color: #1677FF;
+      color: #000000;
+      font-weight: 500;
     }
 
     .find-instance-btn {
@@ -391,7 +399,7 @@
     .previous-step-btn,
     .next-step-btn {
       font-size: 12px;
-      padding: 10px 20px;
+      padding: 15px 20px;
       border: none;
       border-radius: 10px;
       cursor: pointer;
@@ -498,7 +506,7 @@
         <span class="step-number">3</span>
         <span class="step-text">Data Configuration</span>
       </div>
-      <div class="step">
+      <div class="step active">
         <span class="step-number">4</span>
         <span class="step-text">Automatic Config</span>
       </div>
@@ -511,26 +519,22 @@
           <div class="config-title">Automatic Configuration</div>
           <div class="input-group">
             <div class="input-label">Training Duration</div>
-            <input class="input-field" type="text" placeholder="Hour" />
+            <input class="input-field" type="text" placeholder="Hour" id="trainingDuration" />
             <div class="input-label">Expected Accuracy</div>
-            <input class="input-field" type="text" placeholder="%" />
+            <input class="input-field" type="text" placeholder="%" id="expectedAccuracy" />
             <div class="input-label">Perform Level</div>
             <div class="perform-level-options">
               <div class="perform-level-item">
-                <img src="image/icon3.png" alt="Basic Icon" />
-                <span>Basic Configuration</span>
+                <img src="image/lv1.png" alt="Level 1" />
               </div>
               <div class="perform-level-item">
-                <img src="image/icon4.png" alt="Balanced Icon" />
-                <span>Balanced Setup</span>
+                <img src="image/lv2.png" alt="Level 2" />
               </div>
               <div class="perform-level-item">
-                <img src="image/icon5.png" alt="Enhanced Icon" />
-                <span>Enhanced Performance</span>
+                <img src="image/lv3.png" alt="Level 3" />
               </div>
               <div class="perform-level-item">
-                <img src="image/icon6.png" alt="High Icon" />
-                <span>High Performance</span>
+                <img src="image/lv4.png" alt="Level 4" />
               </div>
             </div>
           </div>
@@ -541,28 +545,28 @@
             <div class="instance-table">
               <div class="instance-column">
                 <div class="instance-item">Hardware Specs</div>
-                <div class="instance-item">⚡ GPUs:</div>
-                <div class="instance-item">💾 Storage:</div>
-                <div class="instance-item">🌐 Provider:</div>
+                <div class="instance-item" id="gpus">⚡ GPUs:</div>
+                <div class="instance-item" id="storage">💾 Storage:</div>
+                <div class="instance-item" id="provider">🌐 Provider:</div>
               </div>
               <div class="instance-column">
                 <div class="instance-item">Training Detail</div>
                 <div class="instance-item">⏰ Duration: 0.5 hours</div>
-                <div class="instance-item">💵 Cost:</div>
+                <div class="instance-item" id="cost">💵 Cost:</div>
               </div>
             </div>
           </div>
           <div class="cost-estimate">
             <div class="cost-title">Cost Estimate</div>
-            <div class="cost-item">Hourly Rate:</div>
+            <div class="cost-item" id="hourly-rate">Hourly Rate:</div>
             <div class="cost-item">Training Hours: <span class="value">0.5 hours</span></div>
-            <div class="cost-item">Estimate Total:</div>
+            <div class="cost-item" id="estimate-total">Estimate Total:</div>
           </div>
           <button class="find-instance-btn">Find Instance</button>
         </div>
       </div>
       <div class="footer">
-        <button class="previous-step-btn" onclick="window.location.href='dataconfigurationstep3.html'">Previous Step</button>
+        <button class="previous-step-btn" onclick="navigateToPreviousStep()">Previous Step</button>
         <button id="nextStepBtn" class="next-step-btn" disabled onclick="showPopup()">Start Training</button>
       </div>
     </div>
@@ -595,31 +599,122 @@
       window.location.href = 'dashboard.html';
     }
 
+    function navigateToPreviousStep() {
+      window.location.href = 'dataconfigurationstep3.html';
+    }
+
     const inputs = document.querySelectorAll('input');
     const performLevelItems = document.querySelectorAll('.perform-level-item');
     const nextStepBtn = document.getElementById('nextStepBtn');
 
+    // Elements to update in Instance Configuration
+    const gpusElement = document.getElementById('gpus');
+    const storageElement = document.getElementById('storage');
+    const costElement = document.getElementById('cost');
+    const providerElement = document.getElementById('provider');
+
+    // Elements to update in Cost Estimate
+    const hourlyRateElement = document.getElementById('hourly-rate');
+    const estimateTotalElement = document.getElementById('estimate-total');
+
+    // Load saved values for Step 4
+    window.onload = function() {
+      const trainingDurationInput = document.getElementById('trainingDuration');
+      const expectedAccuracyInput = document.getElementById('expectedAccuracy');
+      const savedDuration = localStorage.getItem('trainingDuration');
+      const savedAccuracy = localStorage.getItem('expectedAccuracy');
+      const savedPerformLevel = localStorage.getItem('selectedPerformLevel');
+
+      if (savedDuration) {
+        trainingDurationInput.value = savedDuration;
+      }
+      if (savedAccuracy) {
+        expectedAccuracyInput.value = savedAccuracy;
+      }
+      if (savedPerformLevel) {
+        performLevelItems.forEach(item => {
+          const img = item.querySelector('img');
+          const level = img.alt.match(/\d+/)[0];
+          if (level === savedPerformLevel) {
+            item.classList.add('selected');
+            img.src = `image/hover${level}.png`;
+            // Restore table values if a performance level was previously selected
+            gpusElement.textContent = '⚡ GPUs: 6x RTX3000';
+            storageElement.textContent = '💾 Storage: 40GB';
+            costElement.textContent = '💵 Cost: 1$/h';
+            providerElement.textContent = '🌐 Provider:';
+            hourlyRateElement.textContent = 'Hourly Rate: 1$/h';
+            estimateTotalElement.textContent = 'Estimate Total: 0.5$';
+          }
+        });
+      }
+
+      checkInputsAndSelection();
+    };
+
+    // Save Step 4 inputs to localStorage
     inputs.forEach(input => {
       input.addEventListener('input', () => {
-        const hasInput = Array.from(inputs).some(input => input.value.trim() !== '');
-        if (hasInput) {
-          nextStepBtn.classList.add('active');
-          nextStepBtn.disabled = false;
-        } else {
-          nextStepBtn.classList.remove('active');
-          nextStepBtn.disabled = true;
+        if (input.id === 'trainingDuration') {
+          localStorage.setItem('trainingDuration', input.value);
+        } else if (input.id === 'expectedAccuracy') {
+          localStorage.setItem('expectedAccuracy', input.value);
         }
+        checkInputsAndSelection();
       });
     });
 
     performLevelItems.forEach(item => {
+      const img = item.querySelector('img');
+      const level = item.querySelector('img').alt.match(/\d+/)[0]; // Extract level number (1, 2, 3, or 4)
+
+      item.addEventListener('mouseover', () => {
+        img.src = `image/hover${level}.png`;
+      });
+
+      item.addEventListener('mouseout', () => {
+        if (!item.classList.contains('selected')) {
+          img.src = `image/lv${level}.png`;
+        }
+      });
+
       item.addEventListener('click', () => {
-        performLevelItems.forEach(i => i.style.borderColor = 'rgba(0, 0, 0, 0.5)');
-        item.style.borderColor = '#1677FF';
-        nextStepBtn.classList.add('active');
-        nextStepBtn.disabled = false;
+        // Update selected state for performance levels
+        performLevelItems.forEach(i => {
+          i.classList.remove('selected');
+          const iImg = i.querySelector('img');
+          const iLevel = iImg.alt.match(/\d+/)[0];
+          iImg.src = `image/lv${iLevel}.png`;
+        });
+        item.classList.add('selected');
+        img.src = `image/hover${level}.png`;
+        localStorage.setItem('selectedPerformLevel', level); // Save selected level
+        checkInputsAndSelection();
+
+        // Update Instance Configuration
+        gpusElement.textContent = '⚡ GPUs: 6x RTX3000';
+        storageElement.textContent = '💾 Storage: 40GB';
+        costElement.textContent = '💵 Cost: 1$/h';
+        providerElement.textContent = '🌐 Provider:';
+
+        // Update Cost Estimate
+        hourlyRateElement.textContent = 'Hourly Rate: 1$/h';
+        estimateTotalElement.textContent = 'Estimate Total: 0.5$';
       });
     });
+
+    // Function to check inputs and perform level selection for enabling Next Step button
+    function checkInputsAndSelection() {
+      const hasInput = Array.from(inputs).some(input => input.value.trim() !== '');
+      const hasSelection = Array.from(performLevelItems).some(item => item.classList.contains('selected'));
+      if (hasInput && hasSelection) {
+        nextStepBtn.classList.add('active');
+        nextStepBtn.disabled = false;
+      } else {
+        nextStepBtn.classList.remove('active');
+        nextStepBtn.disabled = true;
+      }
+    }
 
     // Close dropdown when clicking outside
     document.addEventListener('click', function(event) {
