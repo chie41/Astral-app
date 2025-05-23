@@ -75,6 +75,17 @@ async function sendMessage() {
       chatMessages.scrollTop = chatMessages.scrollHeight;
     }
 
+    //Tạo nút bấm dưới text AI 
+    if (messageContentDiv.innerText.toLowerCase().includes("thông tin dự án")) {
+      console.log("Thêm nút tạo dự án")
+
+      const createBtn = document.createElement("button");
+      createBtn.innerText = "Tạo";
+      createBtn.className = "create-btn"; // gợi ý: bạn có thể định nghĩa CSS cho nút này
+      createBtn.onclick = openModal; // gọi hàm tạo project
+      messageContentDiv.appendChild(createBtn); // thêm nút vào ngay sau tin nhắn của assistant
+    }
+
   } catch (error) {
     const errorMessage = document.createElement('div');
     errorMessage.classList.add('message', 'assistant');
