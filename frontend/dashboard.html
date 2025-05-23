@@ -379,8 +379,8 @@
       <img src="image/logo.png" alt="Logo" />
       <span class="logo-text">Astral</span>
       <div class="nav-links">
-        <a href="#" class="active">Projects</a>
-        <a href="#">Dataset</a>
+        <a href="dashboard.html" class="active">Projects</a>
+        <a href="datasets.html">Dataset</a>
       </div>
     </div>
     <div class="user" onclick="toggleDropdown()">
@@ -406,7 +406,7 @@
   <div class="main">
     <div class="header">
       <h1><img src="image/chartproject.png" alt="Chart Icon" /> Project</h1>
-      <button class="new-project-btn" onclick="openNewProjectModal()">+ New project</button>
+      <button class="new-project-btn" onclick="openModal()">+ New project</button>
     </div>
     <p class="description">Create and manage your AI projects. Choose from various types of machine learning models to solve your specific problems.</p>
 
@@ -441,12 +441,12 @@
 
   <div class="modal" id="newProjectModal">
     <div class="modal-content">
-      <button class="close-btn" onclick="closeNewProjectModal()">×</button>
+      <button class="close-btn" onclick="closeModal()">×</button>
       <h2>How would you like to create your project?</h2>
       <p>Choose the method that works best for you?</p>
       <div class="modal-options">
         <div class="modal-option" onclick="window.location.href='boxchat.html'">
-          <img src="withassistant.png" alt="With Assistant" />
+          <img src="image/withassistant.png" alt="With Assistant" />
           <h3>With our Assistant</h3>
           <p>Let our Assistant help you step by step</p>
         </div>
@@ -458,7 +458,27 @@
       </div>
     </div>
   </div>
-
   <script src="function.js"></script>
+  <script>
+    function openModal() {
+      document.getElementById('newProjectModal').style.display = 'flex';
+    }
+    function closeModal() {
+      document.getElementById('newProjectModal').style.display = 'none';
+    }
+    function toggleDropdown() {
+      const dropdown = document.getElementById('userDropdown');
+      dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+    }
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', function(event) {
+      const dropdown = document.getElementById('userDropdown');
+      const userElement = document.querySelector('.user');
+      if (!userElement.contains(event.target)) {
+        dropdown.style.display = 'none';
+      }
+    });
+  </script>
 </body>
 </html>

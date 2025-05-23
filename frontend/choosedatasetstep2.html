@@ -796,6 +796,11 @@
     const datasetTableBody = document.getElementById('datasetTableBody');
     let currentTab = 'uploadFileTab';
 
+    function toggleDropdown() {
+      const dropdown = document.getElementById('userDropdown');
+      dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+    }
+
     function openPopup() {
       document.getElementById('newDatasetPopup').style.display = 'flex';
     }
@@ -919,6 +924,15 @@
     nextStepBtn.addEventListener('click', function() {
       if (!nextStepBtn.disabled) {
         window.location.href = 'dataconfigurationstep3.html';
+      }
+    });
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', function(event) {
+      const dropdown = document.getElementById('userDropdown');
+      const userElement = document.querySelector('.user');
+      if (!userElement.contains(event.target)) {
+        dropdown.style.display = 'none';
       }
     });
   </script>
