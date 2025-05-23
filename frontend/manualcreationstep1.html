@@ -587,7 +587,6 @@
       if (descriptionInput) descriptionInput.value = suggestion.project_description || '';
 
       const projectType = suggestion.project_type;
-      console.log(projectType)
       options.forEach(opt => opt.classList.remove('selected'));
 
       const matched = Array.from(options).find(opt =>
@@ -595,8 +594,10 @@
       );
       if (matched) {
         matched.classList.add('selected');
+        selectedProjectType = matched.dataset.type;
+        localStorage.setItem('selectedProjectType', selectedProjectType);
       }
-
+      saveInputs();
       checkForm(); // Nếu bạn có hàm checkForm để enable nút
     });
 
