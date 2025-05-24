@@ -354,7 +354,7 @@
 
     .instance-item {
       font-size: 14px;
-      font-weight: 500;
+      font-weight: 400;
       color: #000000;
       margin: 5px 0;
       white-space: nowrap;
@@ -363,11 +363,11 @@
 
     .cost-item {
       font-size: 14px;
-      font-weight: 500;
+      font-weight: 400;
       color: #000000;
       margin: 5px 0;
       display: flex;
-      justify-content: flex-end;
+      justify-content: flex-start;
       white-space: nowrap;
       font-family: 'Roboto', sans-serif;
     }
@@ -634,7 +634,7 @@
       if (savedPerformLevel) {
         performLevelItems.forEach(item => {
           const img = item.querySelector('img');
-          const level = img.alt.match(/\d+/)[0];
+          const level = img.alt.match(/\d+/)[0]; // Extract level number (1, 2, 3, or 4)
           if (level === savedPerformLevel) {
             item.classList.add('selected');
             img.src = `image/hover${level}.png`;
